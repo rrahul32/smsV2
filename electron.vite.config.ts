@@ -4,6 +4,8 @@ import { resolve } from 'path'
 
 export default defineConfig({
   main: {
+    envDir: './',
+    envPrefix: 'MAIN',
     plugins: [externalizeDepsPlugin()],
     resolve: {
       alias: {

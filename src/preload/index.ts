@@ -1,9 +1,9 @@
-import { contextBridge } from 'electron'
+import { contextBridge, ipcRenderer } from 'electron'
 
 if (process.contextIsolated) {
   try {
     contextBridge.exposeInMainWorld('context', {
-      test: () => console.log('Test')
+      test: () => ipcRenderer.invoke('test')
     })
   } catch (error) {
     console.error(error)
