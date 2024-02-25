@@ -1,9 +1,8 @@
 import { electronApp, is, optimizer } from '@electron-toolkit/utils'
-import { BrowserWindow, app, shell } from 'electron'
+import { BrowserWindow, app, ipcMain, shell } from 'electron'
 import { join } from 'path'
 import icon from '../../resources/icon.png?asset'
-
-console.log('🚀 ~ MAIN_VITE_API_URL:', import.meta.env.MAIN_API_URL)
+import { Database } from './lib/realm'
 
 function createWindow(): void {
   // Create the browser window.
@@ -57,8 +56,12 @@ app.whenReady().then(async () => {
     optimizer.watchWindowShortcuts(window)
   })
 
+  const database = new Database()
+
   // IPC test
-  // ipcMain.handle('test', () => test())
+  ipcMain.handle('reconnect', () => database.reconnect())
+  ipcMain.handle('test', () => database.test())
+  ipcMain.handle('addDog', () => database.addDog())
 
   createWindow()
 
