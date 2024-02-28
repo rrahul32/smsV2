@@ -1,11 +1,11 @@
-import { Void } from '@shared/types'
+import { LoginInfo, LoginParams, LogoutParams } from '@/types'
 
 declare global {
   interface Window {
     context: {
-      test: () => Void
-      addDog: () => Void
-      reconnect: () => Promise<Bolean>
+      reconnect: () => Promise<boolean>
+      login: (params: LoginParams) => Promise<LoginInfo>
+      logout: (params: LogoutParams) => Promise<boolean>
     }
   }
 }

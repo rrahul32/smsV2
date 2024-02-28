@@ -13,9 +13,6 @@
     "baseUrl": ".",
     "noUnusedLocals": false,
     "paths": {
-      "@renderer/*": [
-        "src/renderer/src/*"
-      ],
       "@shared/*": [
         "src/shared/*"
       ],

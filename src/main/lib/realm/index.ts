@@ -1,5 +1,5 @@
 import Realm from 'realm'
-import { Dog, Item } from './realm.model'
+import { Users } from './realm.models'
 
 export class Database {
   private app: Realm.App
@@ -29,32 +29,34 @@ export class Database {
         return false
       })
   }
-
-  test() {
-    if (this.realm) {
-      console.log(
-        '🚀 ~ Database ~ reconnect ~ his.realm?.syncSession?.connectionState:',
-        this.realm?.syncSession?.connectionState
-      )
-      const items = this.realm.objects(Dog)
-      console.log('🚀 ~ test ~ items:', items.length)
-    } else {
-      console.log('Realm connection not found')
-    }
+  get() {
+    this.realm
   }
 
   addDog() {
     this.realm?.write(() => {
-      this.realm?.create(Dog, {
+      this.realm?.create('', {
         name: 'test',
         age: 10
       })
     })
   }
 
+  getUsers() {
+    return this.realm?.objects<Users>(Users)
+  }
+
+  createRecord(object, dataArray) {
+    return this.realm?.write(() => {
+      dataArray.forEach((data) => {
+        this.realm?.create(object, data)
+      })
+    })
+  }
+
   setupRealm(user: Realm.User) {
     Realm.open({
-      schema: [Item, Dog],
+      schema: [Users],
       sync: {
         user,
         flexible: true,
@@ -66,8 +68,7 @@ export class Database {
         },
         initialSubscriptions: {
           update: (subs, realm) => {
-            subs.add(realm.objects(Dog))
-            subs.add(realm.objects(Item))
+            subs.add(realm.objects(Users))
           },
           rerunOnOpen: true
         }

@@ -3,6 +3,7 @@ import { BrowserWindow, app, ipcMain, shell } from 'electron'
 import { join } from 'path'
 import icon from '../../resources/icon.png?asset'
 import { Database } from './lib/realm'
+import { UsersService } from './lib/user'
 
 function createWindow(): void {
   // Create the browser window.
@@ -57,11 +58,14 @@ app.whenReady().then(async () => {
   })
 
   const database = new Database()
+  const userService = new UsersService(database)
 
   // IPC test
   ipcMain.handle('reconnect', () => database.reconnect())
-  ipcMain.handle('test', () => database.test())
-  ipcMain.handle('addDog', () => database.addDog())
+
+  ipcMain.handle('login', (_, params) => {
+    return userService.login(params)
+  })
 
   createWindow()
 

@@ -3,9 +3,8 @@ import { contextBridge, ipcRenderer } from 'electron'
 if (process.contextIsolated) {
   try {
     contextBridge.exposeInMainWorld('context', {
-      test: () => ipcRenderer.invoke('test'),
       reconnect: () => ipcRenderer.invoke('reconnect'),
-      addDog: () => ipcRenderer.invoke('addDog')
+      login: (params) => ipcRenderer.invoke('login', params)
     })
   } catch (error) {
     console.error(error)

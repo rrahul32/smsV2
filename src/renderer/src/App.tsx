@@ -1,19 +1,31 @@
-import { useState } from 'react'
+import { AuthProvider, SnackbarProvider } from '@/contexts'
+import { Box, CircularProgress } from '@mui/material'
+import React from 'react'
+import { RouterProvider } from 'react-router-dom'
+import { router } from './router'
 
-function App() {
-  window.addEventListener('online', window.context.reconnect)
-  const [first, setfirst] = useState(null)
+const App: React.FC = () => {
   return (
-    <div className="flex h-full items-center justify-center">
-      <button onClick={() => window.context.test()}>Test</button>
-      <button onClick={() => window.context.reconnect().catch((e) => setfirst(e.message))}>
-        reconnect
-      </button>
-      <br />
-      <button onClick={() => window.context.addDog()}>Add Dog</button>
-      <br />
-      <div className="text-4xl text-blue-500">{first}</div>
-    </div>
+    <React.Suspense
+      fallback={
+        <Box
+          sx={{
+            height: '100vh',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+        >
+          <CircularProgress />
+        </Box>
+      }
+    >
+      <SnackbarProvider>
+        <AuthProvider>
+          <RouterProvider router={router}></RouterProvider>
+        </AuthProvider>
+      </SnackbarProvider>
+    </React.Suspense>
   )
 }
 
