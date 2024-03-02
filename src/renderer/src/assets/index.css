@@ -13,6 +13,5 @@
     @apply select-none;
     @apply bg-transparent;
     @apply font-mono antialiased text-black;
-    @apply overflow-hidden;
   }
 }

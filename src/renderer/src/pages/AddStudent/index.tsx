@@ -370,16 +370,18 @@ const AddStudent = () => {
             <FormHelperText>{student.joinedFrom.errorMessage}</FormHelperText>
           </FormControl>
         </div>
-        <Button
-          type="submit"
-          variant="contained"
-          color="primary"
-          size="large"
-          className="mx-auto block"
-          disabled={!!errorKey}
-        >
-          Add Student
-        </Button>
+        <div className="flex justify-center">
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            size="large"
+            className="mx-auto block"
+            disabled={!!errorKey}
+          >
+            Add Student
+          </Button>
+        </div>
       </form>
       <div className="mt-8 bg-gray-100 p-4 rounded-lg flex justify-center space-x-10">
         <Typography variant="h4" gutterBottom>
