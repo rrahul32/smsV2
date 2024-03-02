@@ -1,7 +1,6 @@
 import { login, logout } from '@/api'
-import { useLocalStorage } from '@/hooks'
 import { LoginParams, UserInfo } from '@shared/types'
-import React, { createContext, useContext } from 'react'
+import React, { createContext, useContext, useState } from 'react'
 import { useSnackbar } from './SnackbarProvider'
 
 interface AuthContextInterface {
@@ -10,6 +9,7 @@ interface AuthContextInterface {
   userInfo: UserInfo | null
   accessToken: string | null
   isLoggedIn: boolean
+  isLoggingIn: boolean
 }
 
 export const AuthContext = createContext({} as AuthContextInterface)
@@ -21,25 +21,37 @@ type AuthProviderProps = {
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const snackbar = useSnackbar()
 
-  const [accessToken, setAccessToken] = useLocalStorage<string | null>('accessToken', null)
+  const [accessToken, setAccessToken] = useState<string | null>(null)
 
-  const [userInfo, setUserInfo] = useLocalStorage<UserInfo | null>('userInfo', null)
+  const [userInfo, setUserInfo] = useState<UserInfo | null>(null)
+
+  const [isLoggingIn, setIsLoggingIn] = useState<boolean>(false)
 
   const handleLogin = async (params: LoginParams) => {
+    setIsLoggingIn(true)
     return login(params)
       .then((res) => {
-        snackbar.success('Login Successful')
-        setAccessToken(res.accessToken)
-        setUserInfo(res.user)
+        if (res) {
+          snackbar.success('Login Successful')
+          setAccessToken(res.accessToken)
+          setUserInfo(res.user)
+        } else {
+          snackbar.error('Invalid credentials')
+        }
         return true
       })
       .catch((e) => {
-        snackbar.error(e.message)
+        console.log('🚀 ~ handleLogin ~ e:', e.message)
+        snackbar.error('Unable to login')
         return false
+      })
+      .finally(() => {
+        setIsLoggingIn(false)
       })
   }
 
   const handleLogout = async () => {
+    console.log('🚀 ~ handleLogout ~ accessToken:', accessToken)
     if (accessToken && userInfo) {
       logout({
         accessToken,
@@ -60,7 +72,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         logout: handleLogout,
         userInfo,
         accessToken,
-        isLoggedIn: !!(accessToken && userInfo && userInfo.id)
+        isLoggedIn: !!(accessToken && userInfo && userInfo.id),
+        isLoggingIn
       }}
     >
       {children}

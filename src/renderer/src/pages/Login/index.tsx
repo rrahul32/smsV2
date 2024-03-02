@@ -5,18 +5,22 @@ import { useState } from 'react'
 function Login() {
   const [username, setUsername] = useState<string>('')
   const [password, setPassword] = useState<string>('')
-  const [loading, setLoading] = useState<boolean>(false)
 
   const { login } = useAuth()
-  const { success, error } = useSnackbar()
+  const { error } = useSnackbar()
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    setLoading(true)
-    login({
-      username,
-      password
-    }).finally(() => setLoading(false))
+    if (username.length == 0) {
+      error('Please enter a username')
+    } else if (password.length === 0) {
+      error('Please enter a password')
+    } else {
+      login({
+        username,
+        password
+      })
+    }
   }
 
   return (

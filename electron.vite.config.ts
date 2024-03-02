@@ -25,6 +25,7 @@ export default defineConfig({
         '@shared': resolve('src/shared'),
         '@/api': resolve('src/renderer/src/api'),
         '@/hooks': resolve('src/renderer/src/hooks'),
+        '@/pages': resolve('src/renderer/src/pages'),
         '@/types': resolve('src/renderer/src/types'),
         '@/assets': resolve('src/renderer/src/assets'),
         '@/store': resolve('src/renderer/src/store'),

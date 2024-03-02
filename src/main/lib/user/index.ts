@@ -9,7 +9,7 @@ export class UsersService {
     this.db = db
   }
 
-  async login(params: LoginParams): Promise<LoginInfo> {
+  async login(params: LoginParams): Promise<LoginInfo | boolean> {
     const users = this.db.getUsers()?.filtered('username == $0', params.username).toJSON()
     if (users && users.length === 1) {
       const user = users[0]
@@ -17,11 +17,12 @@ export class UsersService {
         return {
           accessToken: encode({ id: user._id, username: user.username }, this.JWT_KEY),
           user: {
-            id: user._id as string
+            id: user._id as string,
+            name: user.name as string
           }
         }
       }
     }
-    throw new Error()
+    return false
   }
 }

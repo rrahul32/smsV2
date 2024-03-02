@@ -1,5 +1,6 @@
 export type UserInfo = {
   id: string
+  name: string
 }
 
 export type LoginInfo = {

@@ -4,7 +4,8 @@ if (process.contextIsolated) {
   try {
     contextBridge.exposeInMainWorld('context', {
       reconnect: () => ipcRenderer.invoke('reconnect'),
-      login: (params) => ipcRenderer.invoke('login', params)
+      login: (params) => ipcRenderer.invoke('login', params),
+      logout: () => ipcRenderer.invoke('logout')
     })
   } catch (error) {
     console.error(error)
