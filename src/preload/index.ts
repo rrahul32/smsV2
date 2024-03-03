@@ -5,7 +5,9 @@ if (process.contextIsolated) {
     contextBridge.exposeInMainWorld('context', {
       reconnect: () => ipcRenderer.invoke('reconnect'),
       login: (params) => ipcRenderer.invoke('login', params),
-      logout: () => ipcRenderer.invoke('logout')
+      logout: () => ipcRenderer.invoke('logout'),
+      addStudent: (params) => ipcRenderer.invoke('addStudent', params),
+      getStudents: () => ipcRenderer.invoke('getStudents')
     })
   } catch (error) {
     console.error(error)

@@ -12,3 +12,5 @@ export const Months = [
   'November',
   'December'
 ]
+
+export const phoneNumberRegex = /^[5-9]\d{9}$/

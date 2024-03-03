@@ -1,3 +1,4 @@
+import { addStudent } from '@/api/students'
 import { useSnackbar } from '@/contexts'
 import {
   Button,
@@ -9,7 +10,7 @@ import {
   TextField,
   Typography
 } from '@mui/material'
-import { Classes, Months, Sections } from '@shared/constants'
+import { Classes, Months, Sections, phoneNumberRegex } from '@shared/constants'
 import { useEffect, useState } from 'react'
 import { AddStudentFormValuesType } from './types'
 
@@ -39,49 +40,55 @@ const AddStudent = () => {
     }
   })
   const inititalFormValues: AddStudentFormValuesType = {
-    name: { value: null, error: false, errorMessage: '' },
-    class: { value: null, error: false, errorMessage: '' },
-    section: { value: null, error: false, errorMessage: '' },
-    fatherName: { value: null, error: false, errorMessage: '' },
-    contactNumber: { value: null, error: false, errorMessage: '' },
-    admissionFee: { value: null, error: false, errorMessage: '' },
-    tuitionFee: { value: null, error: false, errorMessage: '' },
-    conveyanceFee: { value: null, error: false, errorMessage: '' },
-    books: { value: null, error: false, errorMessage: '' },
-    uniform: { value: null, error: false, errorMessage: '' },
-    joinedFrom: { value: currentMonthIndex, error: false, errorMessage: '' }
+    name: { value: '', error: false, errorMessage: '' },
+    class: { value: Classes.nursery, error: false, errorMessage: '' },
+    section: { value: Sections.a, error: false, errorMessage: '' },
+    fatherName: { value: '', error: false, errorMessage: '' },
+    contactNumber: { value: '', error: false, errorMessage: '' },
+    admissionFee: { value: '', error: false, errorMessage: '' },
+    tuitionFee: { value: '', error: false, errorMessage: '' },
+    conveyanceFee: { value: '', error: false, errorMessage: '' },
+    books: { value: '', error: false, errorMessage: '' },
+    uniform: { value: '', error: false, errorMessage: '' },
+    joinedFrom: { value: 3, error: false, errorMessage: '' }
   }
+  // const inititalFormValues: AddStudentFormValuesType = {
+  //   name: { value: 'a', error: false, errorMessage: '' },
+  //   class: { value: Classes.nursery, error: false, errorMessage: '' },
+  //   section: { value: Sections.a, error: false, errorMessage: '' },
+  //   fatherName: { value: 'a', error: false, errorMessage: '' },
+  //   contactNumber: { value: '9876543210', error: false, errorMessage: '' },
+  //   admissionFee: { value: '0', error: false, errorMessage: '' },
+  //   tuitionFee: { value: '0', error: false, errorMessage: '' },
+  //   conveyanceFee: { value: '0', error: false, errorMessage: '' },
+  //   books: { value: '0', error: false, errorMessage: '' },
+  //   uniform: { value: '0', error: false, errorMessage: '' },
+  //   joinedFrom: { value: 3, error: false, errorMessage: '' }
+  // }
 
   const [student, setStudent] = useState(inititalFormValues)
   const [totalFee, setTotalFee] = useState(0)
   const [monthlyFee, setMonthlyFee] = useState(0)
 
   const errorKey = Object.keys(student).find(
-    (item) => student[item].error || student[item].value === null
+    (item) =>
+      student[item].error ||
+      !student[item].value ||
+      (typeof student[item].value === 'string' && !student[item].value.length)
   )
 
   useEffect(() => {
-    const admissionFee =
-      typeof student.admissionFee.value === 'string' && numberRegex.test(student.admissionFee.value)
-        ? parseFloat(student.admissionFee.value)
-        : 0
-    const tuitionFee =
-      typeof student.tuitionFee.value === 'string' && numberRegex.test(student.tuitionFee.value)
-        ? parseFloat(student.tuitionFee.value)
-        : 0
-    const conveyanceFee =
-      typeof student.conveyanceFee.value === 'string' &&
-      numberRegex.test(student.conveyanceFee.value)
-        ? parseFloat(student.conveyanceFee.value)
-        : 0
-    const books =
-      typeof student.books.value === 'string' && numberRegex.test(student.books.value)
-        ? parseFloat(student.books.value)
-        : 0
-    const uniform =
-      typeof student.uniform.value === 'string' && numberRegex.test(student.uniform.value)
-        ? parseFloat(student.uniform.value)
-        : 0
+    const admissionFee = numberRegex.test(student.admissionFee.value)
+      ? parseFloat(student.admissionFee.value)
+      : 0
+    const tuitionFee = numberRegex.test(student.tuitionFee.value)
+      ? parseFloat(student.tuitionFee.value)
+      : 0
+    const conveyanceFee = numberRegex.test(student.conveyanceFee.value)
+      ? parseFloat(student.conveyanceFee.value)
+      : 0
+    const books = numberRegex.test(student.books.value) ? parseFloat(student.books.value) : 0
+    const uniform = numberRegex.test(student.uniform.value) ? parseFloat(student.uniform.value) : 0
     const monthsToAcademicEnd =
       student.joinedFrom.value < 3 ? 3 - student.joinedFrom.value : 15 - student.joinedFrom.value
 
@@ -101,15 +108,12 @@ const AddStudent = () => {
   ])
 
   useEffect(() => {
-    const tuitionFee =
-      typeof student.tuitionFee.value === 'string' && numberRegex.test(student.tuitionFee.value)
-        ? parseFloat(student.tuitionFee.value)
-        : 0
-    const conveyanceFee =
-      typeof student.conveyanceFee.value === 'string' &&
-      numberRegex.test(student.conveyanceFee.value)
-        ? parseFloat(student.conveyanceFee.value)
-        : 0
+    const tuitionFee = numberRegex.test(student.tuitionFee.value)
+      ? parseFloat(student.tuitionFee.value)
+      : 0
+    const conveyanceFee = numberRegex.test(student.conveyanceFee.value)
+      ? parseFloat(student.conveyanceFee.value)
+      : 0
     setMonthlyFee(tuitionFee + conveyanceFee)
     return () => {
       setMonthlyFee(0)
@@ -165,7 +169,7 @@ const AddStudent = () => {
     let errorMessage = ''
     switch (name) {
       case 'contactNumber':
-        if (!/^[5-9]\d{9}$/.test(value)) {
+        if (!phoneNumberRegex.test(value)) {
           error = true
           errorMessage = 'Please enter a valid 10-digit phone number'
         }
@@ -201,8 +205,32 @@ const AddStudent = () => {
     if (errorKey) {
       error('Unable to add student')
     } else {
-      //
-      setStudent(inititalFormValues)
+      const studentValues = {
+        name: student.name.value,
+        admissionFee: parseFloat(student.admissionFee.value),
+        booksTotal: parseFloat(student.books.value),
+        class: student.class.value,
+        phone: parseInt(student.contactNumber.value),
+        conveyanceFee: parseFloat(student.conveyanceFee.value),
+        fatherName: student.fatherName.value,
+        joinedFrom: student.joinedFrom.value,
+        section: student.section.value,
+        tuitionFee: parseFloat(student.tuitionFee.value),
+        uniformTotal: parseFloat(student.uniform.value)
+      }
+      addStudent(studentValues)
+        .then((res) => {
+          if (res.result) {
+            success('Student added')
+          } else if (res.error) {
+            error(res.error.displayMessage)
+          }
+          setStudent(inititalFormValues)
+        })
+        .catch((e) => {
+          console.log('🚀 ~ addStudent ~ e:', e)
+          error('Something went wrong')
+        })
     }
   }
 
@@ -223,7 +251,7 @@ const AddStudent = () => {
             name="name"
             value={student.name.value}
             onChange={handleChange}
-            helperText={student.name.errorMessage ?? ''}
+            helperText={student.name.errorMessage}
           />
           <FormControl fullWidth error={student.class.error}>
             <InputLabel id="class-select">Class</InputLabel>
@@ -356,7 +384,7 @@ const AddStudent = () => {
               labelId="joined-from-select"
               id="joined-from"
               value={student.joinedFrom.value}
-              label="joined-from"
+              label="Joined From"
               onChange={handleJoinedFromChange}
             >
               {months.map((each) => {

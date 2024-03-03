@@ -2,8 +2,10 @@ import { electronApp, is, optimizer } from '@electron-toolkit/utils'
 import { BrowserWindow, app, ipcMain, shell } from 'electron'
 import { join } from 'path'
 import icon from '../../resources/icon.png?asset'
+import { PaymentsService } from './lib/payments'
 import { Database } from './lib/realm'
-import { UsersService } from './lib/user'
+import { StudentsService } from './lib/students'
+import { UsersService } from './lib/users'
 
 function createWindow(): void {
   // Create the browser window.
@@ -58,14 +60,34 @@ app.whenReady().then(async () => {
   })
 
   const database = new Database()
-  const userService = new UsersService(database)
+  const usersService = new UsersService(database)
+  const studentsService = new StudentsService(database)
+  const paymentsService = new PaymentsService(database)
 
-  // IPC test
+  /**
+   * IPC methods
+   * **/
   ipcMain.handle('reconnect', () => database.reconnect())
 
   ipcMain.handle('login', (_, params) => {
-    return userService.login(params)
+    return usersService.login(params)
   })
+
+  ipcMain.handle('addStudent', (_, params) => {
+    return studentsService.addStudent(params)
+  })
+
+  ipcMain.handle('addPayment', (_, params) => {
+    return paymentsService.addPayment(params)
+  })
+
+  ipcMain.handle('getStudents', () => {
+    return studentsService.getStudents()
+  })
+
+  /**
+   * IPC methods end
+   * **/
 
   createWindow()
 

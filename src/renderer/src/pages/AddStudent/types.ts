@@ -1,3 +1,5 @@
+import { Classes, Sections } from '@shared/constants'
+
 type FieldType<T> = {
   value: T
   error: boolean
@@ -5,15 +7,15 @@ type FieldType<T> = {
 }
 
 export type AddStudentFormValuesType = {
-  name: FieldType<string | null>
-  class: FieldType<string | null>
-  section: FieldType<string | null>
-  fatherName: FieldType<string | null>
-  contactNumber: FieldType<string | null>
-  admissionFee: FieldType<string | null>
-  tuitionFee: FieldType<string | null>
-  conveyanceFee: FieldType<string | null>
-  books: FieldType<string | null>
-  uniform: FieldType<string | null>
+  name: FieldType<string>
+  class: FieldType<Classes>
+  section: FieldType<Sections>
+  fatherName: FieldType<string>
+  contactNumber: FieldType<string>
+  admissionFee: FieldType<string>
+  tuitionFee: FieldType<string>
+  conveyanceFee: FieldType<string>
+  books: FieldType<string>
+  uniform: FieldType<string>
   joinedFrom: FieldType<number>
 }

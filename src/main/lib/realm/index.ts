@@ -1,5 +1,5 @@
+import { Payments, Students, Users } from '@shared/realm'
 import Realm from 'realm'
-import { Users } from './realm.models'
 
 export class Database {
   private app: Realm.App
@@ -29,34 +29,19 @@ export class Database {
         return false
       })
   }
-  get() {
-    this.realm
+  getObjects<T>(objectName: string) {
+    return this.realm?.objects<T>(objectName)
   }
 
-  addDog() {
+  addObjects<T>(objectName: string, values) {
     this.realm?.write(() => {
-      this.realm?.create('', {
-        name: 'test',
-        age: 10
-      })
-    })
-  }
-
-  getUsers() {
-    return this.realm?.objects<Users>(Users)
-  }
-
-  createRecord(object, dataArray) {
-    return this.realm?.write(() => {
-      dataArray.forEach((data) => {
-        this.realm?.create(object, data)
-      })
+      this.realm?.create<T>(objectName, values)
     })
   }
 
   setupRealm(user: Realm.User) {
     Realm.open({
-      schema: [Users],
+      schema: [Users, Students, Payments],
       sync: {
         user,
         flexible: true,
@@ -69,6 +54,8 @@ export class Database {
         initialSubscriptions: {
           update: (subs, realm) => {
             subs.add(realm.objects(Users))
+            subs.add(realm.objects(Students))
+            subs.add(realm.objects(Payments))
           },
           rerunOnOpen: true
         }
