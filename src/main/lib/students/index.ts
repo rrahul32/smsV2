@@ -1,6 +1,13 @@
 import { Classes, Months, Sections, phoneNumberRegex } from '@shared/constants'
 import { Students } from '@shared/realm'
-import { AddStudentProps, AddStudentResponse, GetStudentsResponse, Student } from '@shared/types'
+import {
+  AddStudentProps,
+  AddStudentResponse,
+  GetStudentsResponse,
+  SearchStudentsParams,
+  SearchStudentsResponse,
+  Student
+} from '@shared/types'
 import { Database } from '../realm'
 export class StudentsService {
   private db: Database
@@ -18,6 +25,29 @@ export class StudentsService {
         result: {
           list,
           totalCount
+        }
+      }
+    } catch (e) {
+      console.log('🚀 ~ StudentsService ~ addStudent ~ e:', e)
+      return {
+        error: {
+          displayMessage: 'Unable to get students',
+          reason: e instanceof Error ? e.message : undefined
+        }
+      }
+    }
+  }
+
+  async searchStudents({ searchText }: SearchStudentsParams): Promise<SearchStudentsResponse> {
+    try {
+      const list: Student[] =
+        (this.db
+          .getObjects<Students>(Students.schema.name)
+          ?.filtered('name TEXT $0', `*${searchText}*`)
+          .toJSON() as Array<Student>) ?? []
+      return {
+        result: {
+          list: list.length > 5 ? list.slice(0, 5) : list
         }
       }
     } catch (e) {
@@ -61,7 +91,7 @@ export class StudentsService {
       }
     }
     try {
-      this.db.addObjects<Students>(Students.schema.name, student)
+      this.db.addObject<Students>(Students.schema.name, student)
       return {
         result: true
       }

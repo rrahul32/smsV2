@@ -1,9 +1,8 @@
 import { Classes, Sections } from '@shared/constants'
-import { BSON } from 'realm'
 import { ServerResponse } from './common.type'
 
 export type Student = {
-  _id: BSON.ObjectId
+  _id: string
   name: string
   fatherName: string
   class: Classes
@@ -36,3 +35,11 @@ export type GetStudentsResponse = ServerResponse<{
   list: Student[]
   totalCount: number
 }>
+
+export type SearchStudentsResponse = ServerResponse<{
+  list: Student[]
+}>
+
+export type SearchStudentsParams = {
+  searchText: string
+}

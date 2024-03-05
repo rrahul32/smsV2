@@ -1,4 +1,5 @@
 import Realm, { PrimitivePropertyTypeName } from 'realm'
+type IndexedType = boolean | 'full-text'
 
 export class Users extends Realm.Object {
   static schema = {
@@ -6,8 +7,8 @@ export class Users extends Realm.Object {
     primaryKey: '_id',
     properties: {
       _id: {
-        type: 'objectId' as PrimitivePropertyTypeName,
-        default: () => new Realm.BSON.ObjectId()
+        type: 'string' as PrimitivePropertyTypeName,
+        default: () => new Realm.BSON.ObjectId().toString()
       },
       username: 'string',
       password: 'string',
@@ -22,10 +23,10 @@ export class Payments extends Realm.Object {
     primaryKey: '_id',
     properties: {
       _id: {
-        type: 'objectId' as PrimitivePropertyTypeName,
-        default: () => new Realm.BSON.ObjectId()
+        type: 'string' as PrimitivePropertyTypeName,
+        default: () => new Realm.BSON.ObjectId().toString()
       },
-      studentId: 'objectId',
+      studentId: 'string',
       type: 'string',
       amount: 'float',
       createdAt: {
@@ -42,10 +43,13 @@ export class Students extends Realm.Object {
     primaryKey: '_id',
     properties: {
       _id: {
-        type: 'objectId' as PrimitivePropertyTypeName,
-        default: () => new Realm.BSON.ObjectId()
+        type: 'string' as PrimitivePropertyTypeName,
+        default: () => new Realm.BSON.ObjectId().toString()
       },
-      name: 'string',
+      name: {
+        type: 'string' as PrimitivePropertyTypeName,
+        indexed: 'full-text' as IndexedType
+      },
       fatherName: 'string',
       class: {
         type: 'string' as PrimitivePropertyTypeName

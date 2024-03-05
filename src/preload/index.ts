@@ -7,7 +7,10 @@ if (process.contextIsolated) {
       login: (params) => ipcRenderer.invoke('login', params),
       logout: () => ipcRenderer.invoke('logout'),
       addStudent: (params) => ipcRenderer.invoke('addStudent', params),
-      getStudents: () => ipcRenderer.invoke('getStudents')
+      getStudents: () => ipcRenderer.invoke('getStudents'),
+      searchStudents: (params) => ipcRenderer.invoke('searchStudents', params),
+      getStudentPayments: (params) => ipcRenderer.invoke('getStudentPayments', params),
+      addPayments: (params) => ipcRenderer.invoke('addPayments', params)
     })
   } catch (error) {
     console.error(error)

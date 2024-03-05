@@ -1,5 +1,15 @@
 import { LoginInfo, LoginParams, LogoutParams } from '@/types'
-import { AddStudentProps, AddStudentResponse, GetStudentsResponse } from '@shared/types'
+import {
+  AddPaymentsProps,
+  AddPaymentsResponse,
+  AddStudentProps,
+  AddStudentResponse,
+  GetStudentPaymentsParams,
+  GetStudentPaymentsResponse,
+  GetStudentsResponse,
+  SearchStudentsParams,
+  SearchStudentsResponse
+} from '@shared/types'
 
 declare global {
   interface Window {
@@ -9,6 +19,9 @@ declare global {
       logout: (params: LogoutParams) => Promise<boolean>
       addStudent: (params: AddStudentProps) => Promise<AddStudentResponse>
       getStudents: () => Promise<GetStudentsResponse>
+      searchStudents: (params: SearchStudentsParams) => Promise<SearchStudentsResponse>
+      getStudentPayments: (params: GetStudentPaymentsParams) => Promise<GetStudentPaymentsResponse>
+      addPayments: (params: AddPaymentsProps) => Promise<AddPaymentsResponse>
     }
   }
 }

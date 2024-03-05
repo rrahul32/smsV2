@@ -87,6 +87,11 @@ export const Navbar = () => {
                     View Payments
                   </Link>
                 </MenuItem>
+                <MenuItem onClick={handleMenuClose}>
+                  <Link to="/payments/new" className="text-white">
+                    New Payment
+                  </Link>
+                </MenuItem>
               </Menu>
               <button
                 onClick={logout}

@@ -1,5 +1,6 @@
 export * from './Authenticated'
 export * from './ErrorPage'
+export * from './FeeReceipt'
 export * from './Navbar'
 export * from './StudentDetailsDialog'
 export * from './UnAuthenticated'

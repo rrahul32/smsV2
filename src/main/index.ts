@@ -77,12 +77,20 @@ app.whenReady().then(async () => {
     return studentsService.addStudent(params)
   })
 
-  ipcMain.handle('addPayment', (_, params) => {
-    return paymentsService.addPayment(params)
+  ipcMain.handle('addPayments', (_, params) => {
+    return paymentsService.addPayments(params)
   })
 
   ipcMain.handle('getStudents', () => {
     return studentsService.getStudents()
+  })
+
+  ipcMain.handle('searchStudents', (_, params) => {
+    return studentsService.searchStudents(params)
+  })
+
+  ipcMain.handle('getStudentPayments', (_, params) => {
+    return paymentsService.getStudentPayments(params)
   })
 
   /**

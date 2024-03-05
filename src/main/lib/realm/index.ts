@@ -33,9 +33,19 @@ export class Database {
     return this.realm?.objects<T>(objectName)
   }
 
-  addObjects<T>(objectName: string, values) {
-    this.realm?.write(() => {
-      this.realm?.create<T>(objectName, values)
+  addObject<T, V>(objectName: string, values) {
+    return this.realm?.write<V>(() => {
+      const res = this.realm?.create<T>(objectName, values)
+      return res?.toJSON() as V
+    })
+  }
+
+  addObjects<T, V>(objectName: string, valuesArray) {
+    return this.realm?.write<V[]>(() => {
+      return valuesArray.map((values) => {
+        const res = this.realm?.create<T>(objectName, values)
+        return res?.toJSON() as V
+      })
     })
   }
 

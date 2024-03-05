@@ -10,7 +10,7 @@ import {
   TextField,
   Typography
 } from '@mui/material'
-import { Classes, Months, Sections, phoneNumberRegex } from '@shared/constants'
+import { Classes, Months, Sections, amountRegex, phoneNumberRegex } from '@shared/constants'
 import { useEffect, useState } from 'react'
 import { AddStudentFormValuesType } from './types'
 
@@ -179,7 +179,7 @@ const AddStudent = () => {
       case 'conveyanceFee':
       case 'books':
       case 'uniform':
-        if (!/^\d+(\.\d+)?$/.test(value)) {
+        if (!amountRegex.test(value)) {
           error = true
           errorMessage = 'Please enter a valid amount'
         }
