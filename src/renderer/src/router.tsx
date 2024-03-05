@@ -3,7 +3,9 @@ import Login from '@/pages/Login'
 import StudentList from '@/pages/StudentList'
 import { createBrowserRouter } from 'react-router-dom'
 import AddStudent from './pages/AddStudent'
+import DueList from './pages/DueList'
 import MakePayment from './pages/MakePayment'
+import PaymentList from './pages/PaymentList'
 
 export const router = createBrowserRouter([
   {
@@ -20,8 +22,16 @@ export const router = createBrowserRouter([
         element: <AddStudent />
       },
       {
+        path: '/students/due-list',
+        element: <DueList />
+      },
+      {
         path: '/payments/new',
         element: <MakePayment />
+      },
+      {
+        path: '/payments',
+        element: <PaymentList />
       }
     ]
   },

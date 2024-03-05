@@ -1,5 +1,6 @@
 import { PaymentTypes } from '@shared/constants'
 import { ServerResponse } from './common.type'
+import { Student } from './students.type'
 
 export type Payment = {
   _id: string
@@ -21,6 +22,11 @@ export type GetStudentPaymentsResponse = ServerResponse<{
   list: Payment[]
   totalMiscPaid: number
   totalFeesPaid: number
+}>
+export type GetPaymentListResponse = ServerResponse<{
+  list: (Payment & {
+    student: Student
+  })[]
 }>
 export type GetStudentPaymentsParams = {
   studentId: string

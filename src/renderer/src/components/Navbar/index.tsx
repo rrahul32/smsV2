@@ -61,6 +61,11 @@ export const Navbar = () => {
                     Add Student
                   </Link>
                 </MenuItem>
+                <MenuItem onClick={handleMenuClose}>
+                  <Link to="/students/due-list" className="text-white">
+                    Due List
+                  </Link>
+                </MenuItem>
               </Menu>
               <button
                 onClick={handlePaymentsClick}

@@ -40,6 +40,16 @@ export type SearchStudentsResponse = ServerResponse<{
   list: Student[]
 }>
 
+export type DueListItem = Student & {
+  totalMiscDue: number
+  totalFeesDue: number
+  totalDue: number
+}
+
+export type GetDueListResponse = ServerResponse<{
+  list: DueListItem[]
+}>
+
 export type SearchStudentsParams = {
   searchText: string
 }

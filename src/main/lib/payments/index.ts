@@ -1,13 +1,15 @@
 import { PaymentTypes } from '@shared/constants'
-import { Payments } from '@shared/realm'
+import { Payments, Students } from '@shared/realm'
 import {
   AddPaymentProps,
   AddPaymentResponse,
   AddPaymentsProps,
   AddPaymentsResponse,
+  GetPaymentListResponse,
   GetStudentPaymentsParams,
   GetStudentPaymentsResponse,
-  Payment
+  Payment,
+  Student
 } from '@shared/types'
 import { Database } from '../realm'
 export class PaymentsService {
@@ -17,14 +19,29 @@ export class PaymentsService {
     this.db = db
   }
 
-  async getPaymentDetails() {
+  async getPaymentList(): Promise<GetPaymentListResponse> {
     try {
-      const res = null
+      const payments = this.db.getObjects<Payments>(Payments.schema.name)?.toJSON() as Payment[]
+      const students = this.db.getObjects<Students>(Students.schema.name)?.toJSON() as Student[]
+
+      const list = payments.length
+        ? payments.map((eachPayment) => {
+            return {
+              ...eachPayment,
+              student: students.find((student) => student._id === eachPayment.studentId) as Student
+            }
+          })
+        : []
+      return {
+        result: {
+          list
+        }
+      }
     } catch (e) {
-      console.log('🚀 ~ StudentsService ~ addStudent ~ e:', e)
+      console.log('🚀 ~ PaymentsService ~ getPaymentList ~ e:', e)
       return {
         error: {
-          displayMessage: 'Unable to get students',
+          displayMessage: 'Unable to get payments',
           reason: e instanceof Error ? e.message : undefined
         }
       }

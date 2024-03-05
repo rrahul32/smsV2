@@ -8,9 +8,11 @@ if (process.contextIsolated) {
       logout: () => ipcRenderer.invoke('logout'),
       addStudent: (params) => ipcRenderer.invoke('addStudent', params),
       getStudents: () => ipcRenderer.invoke('getStudents'),
+      getPaymentList: () => ipcRenderer.invoke('getPaymentList'),
       searchStudents: (params) => ipcRenderer.invoke('searchStudents', params),
       getStudentPayments: (params) => ipcRenderer.invoke('getStudentPayments', params),
-      addPayments: (params) => ipcRenderer.invoke('addPayments', params)
+      addPayments: (params) => ipcRenderer.invoke('addPayments', params),
+      getDueList: () => ipcRenderer.invoke('getDueList')
     })
   } catch (error) {
     console.error(error)

@@ -11,3 +11,5 @@ export const getStudents = () => {
 export const searchStudents = (params: SearchStudentsParams) => {
   return window.context.searchStudents(params)
 }
+
+export const getDueList = window.context.getDueList

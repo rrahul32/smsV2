@@ -1,12 +1,10 @@
 import { addPayments, getStudentPayments, searchStudents } from '@/api'
-import { FeeReceipt } from '@/components'
+import { PaymentReceiptDialog } from '@/components'
 import { useSnackbar } from '@/contexts'
-import { Close as CloseIcon, Print as PrintIcon } from '@mui/icons-material'
-import { Button, Dialog, DialogContent, DialogTitle, TextField, Typography } from '@mui/material'
+import { Button, TextField, Typography } from '@mui/material'
 import { PaymentTypes, amountRegex } from '@shared/constants'
 import { Payment, Student } from '@shared/types'
 import { useEffect, useRef, useState } from 'react'
-import ReactToPrint from 'react-to-print'
 
 const MakePayment = () => {
   const refs = useRef<null[]>([])
@@ -302,41 +300,12 @@ const MakePayment = () => {
 
       {/* Receipt Dialog */}
       {payments && payments.length && selectedStudent ? (
-        <Dialog open onClose={handleReceiptClose} maxWidth="lg">
-          <DialogTitle className="flex justify-center relative text-center ">
-            Payment Receipt
-            <Button className="absolute right-2" onClick={handleReceiptClose}>
-              <CloseIcon />
-            </Button>
-          </DialogTitle>
-          <DialogContent>
-            {payments.map((eachPayment, index) => {
-              return (
-                <div key={index} className="flex flex-col">
-                  <FeeReceipt
-                    payment={eachPayment}
-                    student={selectedStudent}
-                    ref={(el) => (refs.current[index] = el)}
-                  />
-                  <ReactToPrint
-                    bodyClass="print-agreement"
-                    content={() => refs.current[index]}
-                    trigger={() => (
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        size="large"
-                        className="mx-auto col-span-2"
-                      >
-                        <PrintIcon />
-                      </Button>
-                    )}
-                  />
-                </div>
-              )
-            })}
-          </DialogContent>
-        </Dialog>
+        <PaymentReceiptDialog
+          onClose={handleReceiptClose}
+          open
+          payments={payments}
+          student={selectedStudent}
+        />
       ) : null}
     </div>
   )

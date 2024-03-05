@@ -85,6 +85,14 @@ app.whenReady().then(async () => {
     return studentsService.getStudents()
   })
 
+  ipcMain.handle('getDueList', () => {
+    return studentsService.getDueList()
+  })
+
+  ipcMain.handle('getPaymentList', () => {
+    return paymentsService.getPaymentList()
+  })
+
   ipcMain.handle('searchStudents', (_, params) => {
     return studentsService.searchStudents(params)
   })
