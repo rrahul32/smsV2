@@ -1,7 +1,7 @@
 import { addPayments, getStudentPayments, searchStudents } from '@/api'
 import { FeeReceipt } from '@/components'
 import { useSnackbar } from '@/contexts'
-import { Print as PrintIcon } from '@mui/icons-material'
+import { Close as CloseIcon, Print as PrintIcon } from '@mui/icons-material'
 import { Button, Dialog, DialogContent, DialogTitle, TextField, Typography } from '@mui/material'
 import { PaymentTypes, amountRegex } from '@shared/constants'
 import { Payment, Student } from '@shared/types'
@@ -272,10 +272,10 @@ const MakePayment = () => {
             </Typography>
           </div>
           <div className="flex justify-center mx-3">
-            <form onSubmit={onSubmitPayment} className="grid grid-cols-4 justify-between gap-5">
+            <form onSubmit={onSubmitPayment} className="flex justify-between gap-5">
               <TextField
                 error={payment.error}
-                className="col-span-2"
+                className="flex-1"
                 label="Amount"
                 variant="outlined"
                 fullWidth
@@ -290,10 +290,10 @@ const MakePayment = () => {
                 variant="contained"
                 color="primary"
                 size="large"
-                className="mx-auto col-span-2"
+                className=""
                 disabled={payment.error || !payment.value.length}
               >
-                Make Payment
+                Pay Now
               </Button>
             </form>
           </div>
@@ -303,7 +303,12 @@ const MakePayment = () => {
       {/* Receipt Dialog */}
       {payments && payments.length && selectedStudent ? (
         <Dialog open onClose={handleReceiptClose} maxWidth="lg">
-          <DialogTitle className="text-center">Payment Receipt</DialogTitle>
+          <DialogTitle className="flex justify-center relative text-center ">
+            Payment Receipt
+            <Button className="absolute right-2" onClick={handleReceiptClose}>
+              <CloseIcon />
+            </Button>
+          </DialogTitle>
           <DialogContent>
             {payments.map((eachPayment, index) => {
               return (
