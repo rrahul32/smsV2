@@ -20,7 +20,7 @@ export const SnackbarProvider = ({ children }: SnackbarProviderProps) => {
   const [message, setMessage] = useState('')
   const [severity, setSeverity] = useState<AlertColor | undefined>(undefined)
 
-  const handleClose = (event: React.SyntheticEvent | Event, reason?: string) => {
+  const handleClose = (_, reason?: string) => {
     if (reason === 'clickaway') {
       return
     }
