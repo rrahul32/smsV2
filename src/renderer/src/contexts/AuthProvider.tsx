@@ -1,4 +1,4 @@
-import { login, logout } from '@/api'
+import { login } from '@/api'
 import { LoginParams, UserInfo } from '@shared/types'
 import React, { createContext, useContext, useState } from 'react'
 import { useSnackbar } from './SnackbarProvider'
@@ -51,15 +51,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   }
 
   const handleLogout = async () => {
-    console.log('🚀 ~ handleLogout ~ accessToken:', accessToken)
-    if (accessToken && userInfo) {
-      logout({
-        accessToken,
-        userId: userInfo.id
-      }).catch((e) => {
-        console.log('🚀 ~ handleLogout ~ e:', e.message)
-      })
-    }
+    // if (accessToken && userInfo) {
+    //   logout({
+    //     accessToken,
+    //     userId: userInfo.id
+    //   }).catch((e) => {
+    //     console.log('🚀 ~ handleLogout ~ e:', e.message)
+    //   })
+    // }
     setAccessToken(null)
     setUserInfo(null)
     snackbar.success('Logged out successfully')
