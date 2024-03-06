@@ -1,13 +1,18 @@
-import { addPayments, getStudentPayments, searchStudents } from '@/api'
+import { addPayments, getStudent, getStudentPayments, searchStudents } from '@/api'
 import { PaymentReceiptDialog } from '@/components'
 import { useSnackbar } from '@/contexts'
+import { calculateGrandTotal } from '@/utils'
 import { Button, TextField, Typography } from '@mui/material'
 import { PaymentTypes, amountRegex } from '@shared/constants'
 import { Payment, Student } from '@shared/types'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 
 const MakePayment = () => {
-  const refs = useRef<null[]>([])
+  const location = useLocation()
+  const searchParams = new URLSearchParams(location.search)
+  const studentId = searchParams.get('studentId')
+
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState<Student[]>([])
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null)
@@ -26,25 +31,27 @@ const MakePayment = () => {
 
   const { error } = useSnackbar()
 
-  const calculateGrandTotal = (
-    admissionFee,
-    tuitionFee,
-    conveyanceFee,
-    booksTotal,
-    uniformTotal,
-    joinedFrom,
-    currentMonth?: number
-  ) => {
-    const lastMonth = currentMonth ? currentMonth + 1 : 3
-    const monthsToAcademicEnd =
-      joinedFrom < lastMonth ? lastMonth - joinedFrom : 12 + lastMonth - joinedFrom
+  useEffect(() => {
+    if (studentId) {
+      getStudent({ id: studentId })
+        .then((res) => {
+          if (res.result) {
+            setSelectedStudent(res.result)
+          } else if (res.error) {
+            error(res.error.displayMessage)
+          }
+        })
+        .catch((e) => {
+          console.log('🚀 ~ searchStudents ~ e:', e)
+          error('Something went wrong')
+        })
+    }
 
-    return (
-      admissionFee + (tuitionFee + conveyanceFee) * monthsToAcademicEnd + booksTotal + uniformTotal
-    )
-  }
+    return () => {
+      setSelectedStudent(null)
+    }
+  }, [])
 
-  // Function to handle search query change
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value)
   }

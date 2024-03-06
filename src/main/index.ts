@@ -97,6 +97,10 @@ app.whenReady().then(async () => {
     return studentsService.searchStudents(params)
   })
 
+  ipcMain.handle('getStudent', (_, params) => {
+    return studentsService.getStudent(params)
+  })
+
   ipcMain.handle('getStudentPayments', (_, params) => {
     return paymentsService.getStudentPayments(params)
   })

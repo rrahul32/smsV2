@@ -6,8 +6,10 @@ import {
   AddStudentResponse,
   GetDueListResponse,
   GetPaymentListResponse,
+  GetStudentParams,
   GetStudentPaymentsParams,
   GetStudentPaymentsResponse,
+  GetStudentResponse,
   GetStudentsResponse,
   SearchStudentsParams,
   SearchStudentsResponse
@@ -24,6 +26,7 @@ declare global {
       searchStudents: (params: SearchStudentsParams) => Promise<SearchStudentsResponse>
       getStudentPayments: (params: GetStudentPaymentsParams) => Promise<GetStudentPaymentsResponse>
       addPayments: (params: AddPaymentsProps) => Promise<AddPaymentsResponse>
+      getStudent: (params: GetStudentParams) => Promise<GetStudentResponse>
       getPaymentList: () => Promise<GetPaymentListResponse>
       getDueList: () => Promise<GetDueListResponse>
     }

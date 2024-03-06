@@ -11,7 +11,6 @@ const StudentsList: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [isOpen, setIsOpen] = useState<boolean>(false)
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
-  console.log('🚀 ~ selectedIndex:', selectedIndex)
 
   const { error } = useSnackbar()
 

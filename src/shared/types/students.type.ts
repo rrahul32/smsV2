@@ -50,6 +50,12 @@ export type GetDueListResponse = ServerResponse<{
   list: DueListItem[]
 }>
 
+export type GetStudentResponse = ServerResponse<Student>
+
 export type SearchStudentsParams = {
   searchText: string
+}
+
+export type GetStudentParams = {
+  id: string
 }

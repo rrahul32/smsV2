@@ -1,7 +1,7 @@
-import { Authenticated, ErrorPage, UnAuthenticated } from '@/components'
+import { Authenticated, UnAuthenticated } from '@/components'
 import Login from '@/pages/Login'
 import StudentList from '@/pages/StudentList'
-import { createBrowserRouter } from 'react-router-dom'
+import { Navigate, createBrowserRouter } from 'react-router-dom'
 import AddStudent from './pages/AddStudent'
 import DueList from './pages/DueList'
 import MakePayment from './pages/MakePayment'
@@ -11,7 +11,8 @@ export const router = createBrowserRouter([
   {
     path: '/',
     element: <Authenticated />,
-    errorElement: <ErrorPage />,
+    // errorElement: <ErrorPage />,
+    errorElement: <Navigate to={'/'} />,
     children: [
       {
         path: '/students',

@@ -4,6 +4,8 @@ import {
   AddStudentProps,
   AddStudentResponse,
   GetDueListResponse,
+  GetStudentParams,
+  GetStudentResponse,
   GetStudentsResponse,
   SearchStudentsParams,
   SearchStudentsResponse,
@@ -53,6 +55,33 @@ export class StudentsService {
       return {
         result: {
           list: list.length > 5 ? list.slice(0, 5) : list
+        }
+      }
+    } catch (e) {
+      console.log('🚀 ~ StudentsService ~ addStudent ~ e:', e)
+      return {
+        error: {
+          displayMessage: 'Unable to get students',
+          reason: e instanceof Error ? e.message : undefined
+        }
+      }
+    }
+  }
+
+  async getStudent({ id }: GetStudentParams): Promise<GetStudentResponse> {
+    try {
+      const student = (
+        this.db.getObjects<Students>(Students.schema.name)?.toJSON() as Array<Student>
+      ).find((student) => student._id === id)
+      if (student) {
+        return {
+          result: student
+        }
+      } else {
+        return {
+          error: {
+            displayMessage: 'Student not found'
+          }
         }
       }
     } catch (e) {
