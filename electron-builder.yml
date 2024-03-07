@@ -1,4 +1,4 @@
-appId: com.electron.app
+appId: com.sms.app
 productName: smsv2
 directories:
   buildResources: build

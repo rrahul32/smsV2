@@ -7,3 +7,4 @@ out
 default.*
 mongodb-realm/
 .vscode/
+*.bat

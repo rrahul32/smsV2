@@ -90,7 +90,7 @@ const AddStudent = () => {
             inititalFormValues.uniform.value = `${res.result.uniformTotal}`
             inititalFormValues.section.value = res.result.section
             inititalFormValues.fatherName.value = res.result.fatherName
-            inititalFormValues.name.value = res.result.fatherName
+            inititalFormValues.name.value = res.result.name
             inititalFormValues.joinedFrom.value = res.result.joinedFrom
             inititalFormValues.class.value = res.result.class
             setStudent(inititalFormValues)
