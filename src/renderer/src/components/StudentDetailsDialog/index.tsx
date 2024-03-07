@@ -2,6 +2,7 @@ import { getStudentPayments } from '@/api'
 import { useSnackbar } from '@/contexts'
 import { calculateGrandTotal } from '@/utils'
 import CloseIcon from '@mui/icons-material/Close'
+import EditIcon from '@mui/icons-material/Edit'
 import {
   Button,
   CircularProgress,
@@ -172,10 +173,22 @@ export const StudentDetailsDialog: React.FC<StudentDetailsProps> = ({
         </DialogTitle>
         {selectedStudent && (
           <DialogContent className="p-4 my-3 flex flex-col gap-y-4">
-            <Typography variant="h4" className="text-center">
-              Basic Details
-            </Typography>
-
+            <div className="flex relative">
+              <Typography variant="h4" className="flex-1 text-center">
+                Basic Details
+              </Typography>
+              <Button
+                className="flex-1 text-center right-0"
+                variant="contained"
+                sx={{
+                  position: 'absolute'
+                }}
+              >
+                <Link to={`/students/add?studentId=${selectedStudent._id}`}>
+                  <EditIcon />
+                </Link>
+              </Button>
+            </div>
             <div className="grid grid-cols-4 gap-4">
               <div className="flex gap-3">
                 <Typography variant="body1" className="font-bold">
@@ -272,7 +285,11 @@ export const StudentDetailsDialog: React.FC<StudentDetailsProps> = ({
               <Typography className="flex-1 text-center">
                 Total: {totalDue.fees + totalDue.misc}
               </Typography>
-              <Button className="flex-1 text-center" variant="contained">
+              <Button
+                className="flex-1 text-center"
+                variant="contained"
+                disabled={!(totalDue.fees + totalDue.misc)}
+              >
                 <Link to={`/payments/new?studentId=${selectedStudent._id}`}>Pay Now</Link>
               </Button>
             </div>

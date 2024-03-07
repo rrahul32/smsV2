@@ -13,6 +13,7 @@ if (process.contextIsolated) {
       getStudentPayments: (params) => ipcRenderer.invoke('getStudentPayments', params),
       addPayments: (params) => ipcRenderer.invoke('addPayments', params),
       getStudent: (params) => ipcRenderer.invoke('getStudent', params),
+      updateStudent: (params) => ipcRenderer.invoke('updateStudent', params),
       getDueList: () => ipcRenderer.invoke('getDueList')
     })
   } catch (error) {

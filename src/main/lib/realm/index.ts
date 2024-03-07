@@ -40,6 +40,20 @@ export class Database {
     })
   }
 
+  updateObject<T>(objectName: string, id, values) {
+    return this.realm?.write<boolean>(() => {
+      const object = this.realm?.objectForPrimaryKey<T>(objectName, id)
+      if (object) {
+        Object.entries(values).forEach(([key, value]) => {
+          object[key] = value
+        })
+        return true
+      } else {
+        return false
+      }
+    })
+  }
+
   addObjects<T, V>(objectName: string, valuesArray) {
     return this.realm?.write<V[]>(() => {
       return valuesArray.map((values) => {

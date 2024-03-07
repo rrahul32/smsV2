@@ -14,3 +14,4 @@ export const searchStudents = (params: SearchStudentsParams) => {
 
 export const getDueList = window.context.getDueList
 export const getStudent = window.context.getStudent
+export const updateStudent = window.context.updateStudent

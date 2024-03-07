@@ -12,7 +12,9 @@ import {
   GetStudentResponse,
   GetStudentsResponse,
   SearchStudentsParams,
-  SearchStudentsResponse
+  SearchStudentsResponse,
+  UpdateStudentParams,
+  UpdateStudentResponse
 } from '@shared/types'
 
 declare global {
@@ -27,6 +29,7 @@ declare global {
       getStudentPayments: (params: GetStudentPaymentsParams) => Promise<GetStudentPaymentsResponse>
       addPayments: (params: AddPaymentsProps) => Promise<AddPaymentsResponse>
       getStudent: (params: GetStudentParams) => Promise<GetStudentResponse>
+      updateStudent: (params: UpdateStudentParams) => Promise<UpdateStudentResponse>
       getPaymentList: () => Promise<GetPaymentListResponse>
       getDueList: () => Promise<GetDueListResponse>
     }

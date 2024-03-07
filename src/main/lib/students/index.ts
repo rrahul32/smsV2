@@ -10,7 +10,9 @@ import {
   SearchStudentsParams,
   SearchStudentsResponse,
   ServerError,
-  Student
+  Student,
+  UpdateStudentParams,
+  UpdateStudentResponse
 } from '@shared/types'
 import { PaymentsService } from '../payments'
 import { Database } from '../realm'
@@ -134,6 +136,61 @@ export class StudentsService {
       return {
         error: {
           displayMessage: 'Unable to add student',
+          reason: e instanceof Error ? e.message : undefined
+        }
+      }
+    }
+  }
+
+  async updateStudent(params: UpdateStudentParams): Promise<UpdateStudentResponse> {
+    const student = params.details
+    const id = params.id
+    if (!Object.values(Classes).includes(student.class)) {
+      return {
+        error: {
+          displayMessage: 'Selected class is not valid'
+        }
+      }
+    }
+    if (!Object.values(Sections).includes(student.section)) {
+      return {
+        error: {
+          displayMessage: 'Selected section is not valid'
+        }
+      }
+    }
+    if (!Months[student.joinedFrom]) {
+      return {
+        error: {
+          displayMessage: 'Selected joined from month is not valid'
+        }
+      }
+    }
+    if (!phoneNumberRegex.test(String(student.phone))) {
+      return {
+        error: {
+          displayMessage: 'Contact number is not valid'
+        }
+      }
+    }
+    try {
+      const updated = this.db.updateObject<Students>(Students.schema.name, id, student)
+      if (updated) {
+        return {
+          result: true
+        }
+      } else {
+        return {
+          error: {
+            displayMessage: 'Unable to update student'
+          }
+        }
+      }
+    } catch (e) {
+      console.log('🚀 ~ StudentsService ~ update Student ~ e:', e)
+      return {
+        error: {
+          displayMessage: 'Unable to update student',
           reason: e instanceof Error ? e.message : undefined
         }
       }

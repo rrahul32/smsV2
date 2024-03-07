@@ -19,7 +19,14 @@ export type Student = {
 
 export type AddStudentProps = Omit<Student, '_id' | 'createdAt'>
 
+export type UpdateStudentParams = {
+  id: string
+  details: Omit<Student, '_id' | 'createdAt'>
+}
+
 export type AddStudentResponse = ServerResponse<boolean>
+
+export type UpdateStudentResponse = ServerResponse<boolean>
 
 export type GetStudentsParams = {
   searchText?: string

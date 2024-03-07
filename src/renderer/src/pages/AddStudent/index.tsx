@@ -1,4 +1,4 @@
-import { addStudent } from '@/api/students'
+import { addStudent, getStudent, updateStudent } from '@/api/students'
 import { useSnackbar } from '@/contexts'
 import {
   Button,
@@ -12,10 +12,15 @@ import {
 } from '@mui/material'
 import { Classes, Months, Sections, amountRegex, phoneNumberRegex } from '@shared/constants'
 import { useEffect, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import { AddStudentFormValuesType } from './types'
 
 const AddStudent = () => {
   const { error, success } = useSnackbar()
+
+  const location = useLocation()
+  const searchParams = new URLSearchParams(location.search)
+  const studentId = searchParams.get('studentId')
 
   const numberRegex = /\d/
   const currentMonthIndex = new Date().getMonth()
@@ -69,6 +74,41 @@ const AddStudent = () => {
   const [student, setStudent] = useState(inititalFormValues)
   const [totalFee, setTotalFee] = useState(0)
   const [monthlyFee, setMonthlyFee] = useState(0)
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    if (studentId) {
+      setLoading(true)
+      getStudent({ id: studentId })
+        .then((res) => {
+          if (res.result) {
+            inititalFormValues.admissionFee.value = `${res.result.admissionFee}`
+            inititalFormValues.books.value = `${res.result.booksTotal}`
+            inititalFormValues.contactNumber.value = `${res.result.phone}`
+            inititalFormValues.conveyanceFee.value = `${res.result.conveyanceFee}`
+            inititalFormValues.tuitionFee.value = `${res.result.tuitionFee}`
+            inititalFormValues.uniform.value = `${res.result.uniformTotal}`
+            inititalFormValues.section.value = res.result.section
+            inititalFormValues.fatherName.value = res.result.fatherName
+            inititalFormValues.name.value = res.result.fatherName
+            inititalFormValues.joinedFrom.value = res.result.joinedFrom
+            inititalFormValues.class.value = res.result.class
+            setStudent(inititalFormValues)
+          } else if (res.error) {
+            error(res.error.displayMessage)
+          }
+        })
+        .catch((e) => {
+          console.log('🚀 ~ useEffect ~ e:', e)
+          error('Something went wrong')
+        })
+        .finally(() => {
+          setLoading(false)
+        })
+    }
+
+    return () => {}
+  }, [])
 
   const errorKey = Object.keys(student).find(
     (item) =>
@@ -203,7 +243,7 @@ const AddStudent = () => {
   const handleSubmit = (e) => {
     e.preventDefault()
     if (errorKey) {
-      error('Unable to add student')
+      error('Unable to add/save student details')
     } else {
       const studentValues = {
         name: student.name.value,
@@ -218,26 +258,42 @@ const AddStudent = () => {
         tuitionFee: parseFloat(student.tuitionFee.value),
         uniformTotal: parseFloat(student.uniform.value)
       }
-      addStudent(studentValues)
-        .then((res) => {
-          if (res.result) {
-            success('Student added')
-          } else if (res.error) {
-            error(res.error.displayMessage)
-          }
-          setStudent(inititalFormValues)
-        })
-        .catch((e) => {
-          console.log('🚀 ~ addStudent ~ e:', e)
-          error('Something went wrong')
-        })
+      if (studentId) {
+        updateStudent({ id: studentId, details: studentValues })
+          .then((res) => {
+            if (res.result) {
+              success('Student details updated')
+            } else if (res.error) {
+              error(res.error.displayMessage)
+            }
+            setStudent(inititalFormValues)
+          })
+          .catch((e) => {
+            console.log('🚀 ~ updateStudent ~ e:', e)
+            error('Something went wrong')
+          })
+      } else {
+        addStudent(studentValues)
+          .then((res) => {
+            if (res.result) {
+              success('Student added')
+            } else if (res.error) {
+              error(res.error.displayMessage)
+            }
+            setStudent(inititalFormValues)
+          })
+          .catch((e) => {
+            console.log('🚀 ~ addStudent ~ e:', e)
+            error('Something went wrong')
+          })
+      }
     }
   }
 
   return (
     <div className="container mx-auto mt-8 px-4">
       <Typography variant="h4" component="h2" gutterBottom>
-        Add Student
+        {studentId ? 'Edit Student' : 'Add Student'}
       </Typography>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-4 gap-4">
@@ -407,7 +463,7 @@ const AddStudent = () => {
             className="mx-auto block"
             disabled={!!errorKey}
           >
-            Add Student
+            {studentId ? 'Save Changes' : 'Add Student'}
           </Button>
         </div>
       </form>
