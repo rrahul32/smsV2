@@ -9,6 +9,6 @@ export class UsersDbService {
   }
 
   getUserByFilter(filter: mongoose.FilterQuery<User>) {
-    return this.db.findById(filter).exec()
+    return this.db.findOne(filter).exec()
   }
 }

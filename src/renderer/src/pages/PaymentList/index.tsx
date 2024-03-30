@@ -7,7 +7,9 @@ import MUIDataTable from 'mui-datatables'
 import { useEffect, useState } from 'react'
 
 const PaymentList: React.FC = () => {
-  const [payments, setPayments] = useState<(Payment & { student: Student })[]>([])
+  const [payments, setPayments] = useState<
+    (Payment & { student?: Pick<Student, '_id' | 'name' | 'class' | 'section'> })[]
+  >([])
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [isOpen, setIsOpen] = useState<boolean>(false)
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
@@ -19,7 +21,7 @@ const PaymentList: React.FC = () => {
   useEffect(() => {
     setIsLoading(true)
     if (userInfo) {
-      getPaymentList({ userId: userInfo.id })
+      getPaymentList({})
         .then((res) => {
           if (res.result) {
             setPayments(res.result.list)
@@ -131,12 +133,14 @@ const PaymentList: React.FC = () => {
     viewColumns: false
   }
 
-  const formatPayments = (payments: (Payment & { student: Student })[]) => {
+  const formatPayments = (
+    payments: (Payment & { student?: Pick<Student, '_id' | 'name' | 'class' | 'section'> })[]
+  ) => {
     return payments.map((payment) => {
       return {
-        studentName: payment.student.name,
-        studentClass: payment.student.class,
-        studentSection: payment.student.section,
+        studentName: payment.student?.name,
+        studentClass: payment.student?.class,
+        studentSection: payment.student?.section,
         type: payment.type,
         amount: payment.amount,
         createdAt: payment.createdAt

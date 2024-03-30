@@ -3,8 +3,8 @@ import { BrowserWindow, app, ipcMain, shell } from 'electron'
 import mongoose from 'mongoose'
 import { join } from 'path'
 
+import { PaymentsService, StudentsService, UsersService } from '@lib/services'
 import icon from '../../resources/icon.png?asset'
-import { PaymentsService, StudentsService, UsersService } from './lib/services'
 
 function createWindow(): void {
   // Create the browser window.

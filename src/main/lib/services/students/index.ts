@@ -1,4 +1,4 @@
-import { StudentsDbService, UsersDbService } from '@/lib/db'
+import { StudentsDbService, UsersDbService } from '@lib/db'
 import { Months, phoneNumberRegex } from '@shared/constants'
 import {
   AddStudentProps,

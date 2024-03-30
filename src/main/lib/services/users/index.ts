@@ -1,4 +1,4 @@
-import { UsersDbService } from '@/lib/db'
+import { UsersDbService } from '@lib/db'
 import { LoginInfo, LoginParams } from '@shared/types'
 import { encode } from 'jwt-simple'
 

@@ -9,7 +9,7 @@ type PaymentReceiptDialogProps = {
   open: boolean
   onClose: () => void
   payments?: Payment[]
-  student?: Student
+  student?: Pick<Student, '_id' | 'class' | 'section' | 'name'>
 }
 
 export const PaymentReceiptDialog: React.FC<PaymentReceiptDialogProps> = ({

@@ -99,7 +99,12 @@ const MakePayment = () => {
         })
       }
       if (confirm(`Confirm payment of ${amount}?`)) {
-        addPayments({ payments, studentId: selectedStudent._id })
+        addPayments({
+          payments: payments.map((eachPayment) => ({
+            ...eachPayment,
+            studentId: selectedStudent._id
+          }))
+        })
           .then((res) => {
             if (res.error) {
               error(res.error.displayMessage)

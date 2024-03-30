@@ -1,4 +1,4 @@
-import { PaymentsDbService } from '@/lib/db'
+import { PaymentsDbService } from '@lib/db'
 import {
   AddPaymentProps,
   AddPaymentResponse,
