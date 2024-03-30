@@ -1,17 +1,6 @@
-import { AddStudentProps, SearchStudentsParams } from '@shared/types'
-
-export const addStudent = (params: AddStudentProps) => {
-  return window.context.addStudent(params)
-}
-
-export const getStudents = () => {
-  return window.context.getStudents()
-}
-
-export const searchStudents = (params: SearchStudentsParams) => {
-  return window.context.searchStudents(params)
-}
-
+export const addStudent = window.context.addStudent
+export const getStudents = window.context.getStudents
+export const searchStudents = window.context.searchStudents
 export const getDueList = window.context.getDueList
 export const getStudent = window.context.getStudent
 export const updateStudent = window.context.updateStudent

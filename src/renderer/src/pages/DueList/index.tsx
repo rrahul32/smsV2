@@ -1,5 +1,5 @@
 import { getDueList } from '@/api'
-import { useSnackbar } from '@/contexts'
+import { useAuth, useSnackbar } from '@/contexts'
 import { CircularProgress } from '@mui/material'
 import { DueListItem } from '@shared/types'
 import MUIDataTable from 'mui-datatables'
@@ -9,23 +9,29 @@ const DueList: React.FC = () => {
   const [dueList, setDueList] = useState<DueListItem[]>([])
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
+  const { userInfo } = useAuth()
+
   const { error } = useSnackbar()
 
   useEffect(() => {
     setIsLoading(true)
-    getDueList()
-      .then((res) => {
-        if (res.result) {
-          setDueList(res.result.list)
-        } else if (res.error) {
-          error(res.error.displayMessage)
-        }
+    if (userInfo) {
+      getDueList({
+        userId: userInfo?.id
       })
-      .catch((e) => {
-        console.log('🚀 ~ useEffect ~ e:', e)
-        error('Something went wrong')
-      })
-      .finally(() => setIsLoading(false))
+        .then((res) => {
+          if (res.result) {
+            setDueList(res.result.list)
+          } else if (res.error) {
+            error(res.error.displayMessage)
+          }
+        })
+        .catch((e) => {
+          console.log('🚀 ~ useEffect ~ e:', e)
+          error('Something went wrong')
+        })
+        .finally(() => setIsLoading(false))
+    }
   }, [])
 
   const columns = [

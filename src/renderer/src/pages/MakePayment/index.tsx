@@ -1,6 +1,6 @@
 import { addPayments, getStudent, getStudentPayments, searchStudents } from '@/api'
 import { PaymentReceiptDialog } from '@/components'
-import { useSnackbar } from '@/contexts'
+import { useAuth, useSnackbar } from '@/contexts'
 import { calculateGrandTotal } from '@/utils'
 import { Button, TextField, Typography } from '@mui/material'
 import { PaymentTypes, amountRegex } from '@shared/constants'
@@ -12,6 +12,8 @@ const MakePayment = () => {
   const location = useLocation()
   const searchParams = new URLSearchParams(location.search)
   const studentId = searchParams.get('studentId')
+
+  const { userInfo } = useAuth()
 
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState<Student[]>([])
@@ -119,8 +121,8 @@ const MakePayment = () => {
   }
 
   useEffect(() => {
-    if (searchQuery && searchQuery.length) {
-      searchStudents({ searchText: searchQuery })
+    if (searchQuery && searchQuery.length && userInfo) {
+      searchStudents({ searchText: searchQuery, userId: userInfo.id })
         .then((res) => {
           if (res.result) {
             setSearchResults(res.result.list)
@@ -141,7 +143,7 @@ const MakePayment = () => {
   }, [searchQuery])
 
   useEffect(() => {
-    if (selectedStudent) {
+    if (selectedStudent && userInfo) {
       getStudentPayments({ studentId: selectedStudent._id })
         .then((res) => {
           if (res.result) {
@@ -154,6 +156,7 @@ const MakePayment = () => {
                 0,
                 0,
                 selectedStudent.joinedFrom,
+                userInfo.academicYear,
                 currentMonth
               ) - res.result.totalFeesPaid
             const totalMiscDue =
@@ -259,14 +262,17 @@ const MakePayment = () => {
           <div className="flex justify-between mx-3">
             <Typography className="text-center">
               Total Fee:{' '}
-              {calculateGrandTotal(
-                selectedStudent.admissionFee,
-                selectedStudent.tuitionFee,
-                selectedStudent.conveyanceFee,
-                selectedStudent.booksTotal,
-                selectedStudent.uniformTotal,
-                selectedStudent.joinedFrom
-              )}
+              {userInfo
+                ? calculateGrandTotal(
+                    selectedStudent.admissionFee,
+                    selectedStudent.tuitionFee,
+                    selectedStudent.conveyanceFee,
+                    selectedStudent.booksTotal,
+                    selectedStudent.uniformTotal,
+                    selectedStudent.joinedFrom,
+                    userInfo.academicYear
+                  )
+                : 0}
             </Typography>
             <Typography className="text-center">
               Monthly Fee: {selectedStudent.tuitionFee + selectedStudent.conveyanceFee}

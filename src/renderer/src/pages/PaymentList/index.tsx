@@ -1,6 +1,6 @@
 import { getPaymentList } from '@/api'
 import { PaymentReceiptDialog } from '@/components'
-import { useSnackbar } from '@/contexts'
+import { useAuth, useSnackbar } from '@/contexts'
 import { Button, CircularProgress } from '@mui/material'
 import { Payment, Student } from '@shared/types'
 import MUIDataTable from 'mui-datatables'
@@ -12,23 +12,27 @@ const PaymentList: React.FC = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false)
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
 
+  const { userInfo } = useAuth()
+
   const { error } = useSnackbar()
 
   useEffect(() => {
     setIsLoading(true)
-    getPaymentList()
-      .then((res) => {
-        if (res.result) {
-          setPayments(res.result.list)
-        } else if (res.error) {
-          error(res.error.displayMessage)
-        }
-      })
-      .catch((e) => {
-        console.log('🚀 ~ useEffect ~ e:', e)
-        error('Something went wrong')
-      })
-      .finally(() => setIsLoading(false))
+    if (userInfo) {
+      getPaymentList({ userId: userInfo.id })
+        .then((res) => {
+          if (res.result) {
+            setPayments(res.result.list)
+          } else if (res.error) {
+            error(res.error.displayMessage)
+          }
+        })
+        .catch((e) => {
+          console.log('🚀 ~ useEffect ~ e:', e)
+          error('Something went wrong')
+        })
+        .finally(() => setIsLoading(false))
+    }
   }, [])
 
   const handleDetailsClick = (index: number) => {

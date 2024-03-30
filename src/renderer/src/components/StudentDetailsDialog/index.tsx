@@ -1,5 +1,5 @@
 import { getStudentPayments } from '@/api'
-import { useSnackbar } from '@/contexts'
+import { useAuth, useSnackbar } from '@/contexts'
 import { calculateGrandTotal } from '@/utils'
 import CloseIcon from '@mui/icons-material/Close'
 import EditIcon from '@mui/icons-material/Edit'
@@ -33,10 +33,12 @@ export const StudentDetailsDialog: React.FC<StudentDetailsProps> = ({
     misc: 0
   })
 
+  const { userInfo } = useAuth()
+
   const { error } = useSnackbar()
 
   useEffect(() => {
-    if (selectedStudent?._id) {
+    if (selectedStudent?._id && userInfo) {
       setLoading(true)
       getStudentPayments({ studentId: selectedStudent._id })
         .then((res) => {
@@ -51,6 +53,7 @@ export const StudentDetailsDialog: React.FC<StudentDetailsProps> = ({
                 0,
                 0,
                 selectedStudent.joinedFrom,
+                userInfo.academicYear,
                 currentMonth
               ) - res.result.totalFeesPaid
             const totalMiscDue =
@@ -257,14 +260,17 @@ export const StudentDetailsDialog: React.FC<StudentDetailsProps> = ({
                   Grand Total:
                 </Typography>
                 <Typography variant="body1">
-                  {calculateGrandTotal(
-                    selectedStudent.admissionFee,
-                    selectedStudent.tuitionFee,
-                    selectedStudent.conveyanceFee,
-                    selectedStudent.booksTotal,
-                    selectedStudent.uniformTotal,
-                    selectedStudent.joinedFrom
-                  )}
+                  {userInfo
+                    ? calculateGrandTotal(
+                        selectedStudent.admissionFee,
+                        selectedStudent.tuitionFee,
+                        selectedStudent.conveyanceFee,
+                        selectedStudent.booksTotal,
+                        selectedStudent.uniformTotal,
+                        selectedStudent.joinedFrom,
+                        userInfo.academicYear
+                      )
+                    : 0}
                 </Typography>
               </div>
               <div className="flex gap-3">

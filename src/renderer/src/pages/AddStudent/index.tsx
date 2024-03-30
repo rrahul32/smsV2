@@ -1,5 +1,5 @@
 import { addStudent, getStudent, updateStudent } from '@/api/students'
-import { useSnackbar } from '@/contexts'
+import { useAuth, useSnackbar } from '@/contexts'
 import {
   Button,
   FormControl,
@@ -17,6 +17,7 @@ import { AddStudentFormValuesType } from './types'
 
 const AddStudent = () => {
   const { error, success } = useSnackbar()
+  const { userInfo } = useAuth()
 
   const location = useLocation()
   const searchParams = new URLSearchParams(location.search)
@@ -258,34 +259,38 @@ const AddStudent = () => {
         tuitionFee: parseFloat(student.tuitionFee.value),
         uniformTotal: parseFloat(student.uniform.value)
       }
-      if (studentId) {
-        updateStudent({ id: studentId, details: studentValues })
-          .then((res) => {
-            if (res.result) {
-              success('Student details updated')
-            } else if (res.error) {
-              error(res.error.displayMessage)
-            }
-            setStudent(inititalFormValues)
-          })
-          .catch((e) => {
-            console.log('🚀 ~ updateStudent ~ e:', e)
-            error('Something went wrong')
-          })
+      if (userInfo) {
+        if (studentId) {
+          updateStudent({ id: studentId, details: studentValues })
+            .then((res) => {
+              if (res.result) {
+                success('Student details updated')
+              } else if (res.error) {
+                error(res.error.displayMessage)
+              }
+              setStudent(inititalFormValues)
+            })
+            .catch((e) => {
+              console.log('🚀 ~ updateStudent ~ e:', e)
+              error('Something went wrong')
+            })
+        } else {
+          addStudent({ userId: userInfo.id, details: studentValues })
+            .then((res) => {
+              if (res.result) {
+                success('Student added')
+              } else if (res.error) {
+                error(res.error.displayMessage)
+              }
+              setStudent(inititalFormValues)
+            })
+            .catch((e) => {
+              console.log('🚀 ~ addStudent ~ e:', e)
+              error('Something went wrong')
+            })
+        }
       } else {
-        addStudent(studentValues)
-          .then((res) => {
-            if (res.result) {
-              success('Student added')
-            } else if (res.error) {
-              error(res.error.displayMessage)
-            }
-            setStudent(inititalFormValues)
-          })
-          .catch((e) => {
-            console.log('🚀 ~ addStudent ~ e:', e)
-            error('Something went wrong')
-          })
+        error('User details notset')
       }
     }
   }

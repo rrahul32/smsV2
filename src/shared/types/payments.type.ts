@@ -9,25 +9,51 @@ export type Payment = {
   amount: number
   createdAt: Date
 }
-export type AddPaymentProps = Omit<Payment, '_id' | 'createdAt'>
+export type AddPaymentProps = {
+  payment: Omit<Payment, '_id' | 'createdAt'>
+}
 export type AddPaymentsProps = {
-  payments: Pick<Payment, 'amount' | 'type'>[]
-  studentId: string
+  payments: AddPaymentProps['payment'][]
 }
 export type AddPaymentsResponse = ServerResponse<{
   list: Payment[]
 }>
 export type AddPaymentResponse = ServerResponse<boolean>
-export type GetStudentPaymentsResponse = ServerResponse<{
-  list: Payment[]
-  totalMiscPaid: number
-  totalFeesPaid: number
-}>
-export type GetPaymentListResponse = ServerResponse<{
-  list: (Payment & {
-    student: Student
-  })[]
-}>
+
 export type GetStudentPaymentsParams = {
   studentId: string
+  page?: number
+  limit?: number
+}
+
+export type GetPaymentsDbParams = {
+  filter?: {
+    studentIds?: string[]
+    type?: PaymentTypes
+  }
+  limit?: number
+  skip?: number
+  sort?: {
+    field: string
+    sortOrder: 1 | -1
+  }
+  studentDetails?: boolean
+}
+
+export type GetPaymentsDbResponse = {
+  totalCount: number
+  count: number
+  list: (Payment & {
+    student?: Pick<Student, '_id' | 'class' | 'name' | 'section'>
+  })[]
+  totalMiscPaid: number
+  totalFeesPaid: number
+}
+
+export type GetStudentPaymentsResponse = ServerResponse<GetPaymentsDbResponse>
+
+export type GetPaymentListResponse = ServerResponse<GetPaymentsDbResponse>
+
+export type GetPaymentListParams = Pick<GetPaymentsDbParams, 'limit' | 'sort' | 'filter'> & {
+  page?: number
 }

@@ -1,11 +1,10 @@
 import { electronApp, is, optimizer } from '@electron-toolkit/utils'
 import { BrowserWindow, app, ipcMain, shell } from 'electron'
+import mongoose from 'mongoose'
 import { join } from 'path'
+
 import icon from '../../resources/icon.png?asset'
-import { PaymentsService } from './lib/payments'
-import { Database } from './lib/realm'
-import { StudentsService } from './lib/students'
-import { UsersService } from './lib/users'
+import { PaymentsService, StudentsService, UsersService } from './lib/services'
 
 function createWindow(): void {
   // Create the browser window.
@@ -61,15 +60,16 @@ app.whenReady().then(async () => {
     optimizer.watchWindowShortcuts(window)
   })
 
-  const database = new Database()
-  const usersService = new UsersService(database)
-  const studentsService = new StudentsService(database)
-  const paymentsService = new PaymentsService(database)
+  const MONGO_URL = import.meta.env.MAIN_MONGO_URL
+  await mongoose.connect(MONGO_URL)
+
+  const usersService = new UsersService()
+  const studentsService = new StudentsService()
+  const paymentsService = new PaymentsService()
 
   /**
    * IPC methods
    * **/
-  ipcMain.handle('reconnect', () => database.reconnect())
 
   ipcMain.handle('login', (_, params) => {
     return usersService.login(params)
@@ -83,16 +83,16 @@ app.whenReady().then(async () => {
     return paymentsService.addPayments(params)
   })
 
-  ipcMain.handle('getStudents', () => {
-    return studentsService.getStudents()
+  ipcMain.handle('getStudents', (_, params) => {
+    return studentsService.getStudents(params)
   })
 
-  ipcMain.handle('getDueList', () => {
-    return studentsService.getDueList()
+  ipcMain.handle('getDueList', (_, params) => {
+    return studentsService.getDueList(params)
   })
 
-  ipcMain.handle('getPaymentList', () => {
-    return paymentsService.getPaymentList()
+  ipcMain.handle('getPaymentList', (_, params) => {
+    return paymentsService.getPaymentList(params)
   })
 
   ipcMain.handle('searchStudents', (_, params) => {

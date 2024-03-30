@@ -1,6 +1,7 @@
 export type UserInfo = {
   id: string
   name: string
+  academicYear: number
 }
 
 export type LoginInfo = {
@@ -16,4 +17,12 @@ export type LoginParams = {
 export type LogoutParams = {
   userId: string
   accessToken: string
+}
+
+export type User = {
+  _id: string
+  name: string
+  username: string
+  password: string
+  academicYear: number
 }
