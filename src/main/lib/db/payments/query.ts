@@ -1,9 +1,9 @@
-import { PaymentTypes } from '@shared/constants'
+import { PaymentTypes, SortOrder } from '@shared/constants'
 import { GetPaymentsDbParams, Payment } from '@shared/types'
 import { FilterQuery, PipelineStage } from 'mongoose'
 
 export const getPaymentsQuery = (params: GetPaymentsDbParams) => {
-  const sort: Record<string, 1 | -1> = params.sort
+  const sort: Record<string, SortOrder> = params.sort
     ? {
         [params.sort.field]: params.sort.sortOrder
       }
@@ -18,9 +18,9 @@ export const getPaymentsQuery = (params: GetPaymentsDbParams) => {
       }
     })
   }
-  if (params.filter?.type) {
+  if (params.filter?.types && params.filter.types.length) {
     andQuery.push({
-      type: params.filter.type
+      type: { $in: params.filter.types }
     })
   }
   const query: PipelineStage[] = [
@@ -74,7 +74,7 @@ export const getPaymentsQuery = (params: GetPaymentsDbParams) => {
           from: 'students',
           as: 'student',
           let: {
-            studentId: '$studentId'
+            studentId: '$list.studentId'
           },
           pipeline: [
             {

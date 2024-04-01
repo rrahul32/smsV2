@@ -45,11 +45,12 @@ export class StudentsService {
         filter: {
           academicYear,
           classes: params.filter?.classes,
-          searchText: params.searchText,
+          searchText: params.filter?.searchText,
           sections: params.filter?.sections
         },
         limit,
-        skip
+        skip,
+        sort: params.sort
       })
       return {
         result
@@ -70,7 +71,9 @@ export class StudentsService {
     userId
   }: SearchStudentsParams): Promise<SearchStudentsResponse> {
     return this.getStudents({
-      searchText,
+      filter: {
+        searchText
+      },
       userId,
       limit: 5,
       page: 0

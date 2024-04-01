@@ -1,4 +1,4 @@
-import { PaymentsDbService } from '@lib/db'
+import { PaymentsDbService, StudentsDbService, UsersDbService } from '@lib/db'
 import {
   AddPaymentProps,
   AddPaymentResponse,
@@ -9,15 +9,44 @@ import {
   GetStudentPaymentsParams,
   GetStudentPaymentsResponse
 } from '@shared/types'
+import { getAcademicYear } from '@shared/utils'
 export class PaymentsService {
   private paymentsDb = new PaymentsDbService()
+  private studentsDb = new StudentsDbService()
+  private readonly usersDb = new UsersDbService()
+  private getUserAcademicYear(id) {
+    return this.usersDb
+      .getUserById(id, {
+        academicYear: 1
+      })
+      .then((data) => {
+        if (data) {
+          return data.academicYear
+        } else {
+          return getAcademicYear()
+        }
+      })
+      .catch(() => {
+        return getAcademicYear()
+      })
+  }
 
   async getPaymentList(params: GetPaymentListParams): Promise<GetPaymentListResponse> {
     try {
+      const academicYear = await this.getUserAcademicYear(params.userId)
+      const studentIds = await this.studentsDb
+        .getStudentsByAcademicYear(academicYear, {
+          _id: 1
+        })
+        .then((data) => data.map((item) => item._id))
+        .catch(() => [])
       const limit = params.limit ?? 10
       const skip = params.page ? params.page * limit : 0
       const result = await this.paymentsDb.getPayments({
-        filter: params.filter,
+        filter: {
+          studentIds,
+          types: params.filter?.types
+        },
         limit,
         skip,
         sort: params.sort,

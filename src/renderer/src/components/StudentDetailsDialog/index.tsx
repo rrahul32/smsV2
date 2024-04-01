@@ -180,17 +180,17 @@ export const StudentDetailsDialog: React.FC<StudentDetailsProps> = ({
               <Typography variant="h4" className="flex-1 text-center">
                 Basic Details
               </Typography>
-              <Button
-                className="flex-1 text-center right-0"
-                variant="contained"
-                sx={{
-                  position: 'absolute'
-                }}
-              >
-                <Link to={`/students/add?studentId=${selectedStudent._id}`}>
+              <Link to={`/students/add?studentId=${selectedStudent._id}`}>
+                <Button
+                  className="flex-1 text-center right-0"
+                  variant="contained"
+                  sx={{
+                    position: 'absolute'
+                  }}
+                >
                   <EditIcon />
-                </Link>
-              </Button>
+                </Button>
+              </Link>
             </div>
             <div className="grid grid-cols-4 gap-4">
               <div className="flex gap-3">
@@ -291,13 +291,15 @@ export const StudentDetailsDialog: React.FC<StudentDetailsProps> = ({
               <Typography className="flex-1 text-center">
                 Total: {totalDue.fees + totalDue.misc}
               </Typography>
-              <Button
-                className="flex-1 text-center"
-                variant="contained"
-                disabled={!(totalDue.fees + totalDue.misc)}
-              >
-                <Link to={`/payments/new?studentId=${selectedStudent._id}`}>Pay Now</Link>
-              </Button>
+              <Link to={`/payments/new?studentId=${selectedStudent._id}`}>
+                <Button
+                  className="flex-1 text-center"
+                  variant="contained"
+                  disabled={!(totalDue.fees + totalDue.misc)}
+                >
+                  Pay Now
+                </Button>
+              </Link>
             </div>
 
             <Typography variant="h4" className="text-center">

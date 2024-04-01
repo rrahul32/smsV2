@@ -34,7 +34,7 @@ export class StudentsDbService {
     filter: FilterQuery<Student>,
     projection?: ProjectionType<Student>
   ): Promise<Student | null> {
-    return this.db.findOne(filter, projection).exec()
+    return this.db.findOne(filter, projection).lean()
   }
 
   addStudent(details: Omit<Student, '_id' | 'createdAt'>) {
@@ -72,5 +72,14 @@ export class StudentsDbService {
           }
         }
       })
+  }
+
+  getStudentsByAcademicYear(academicYear: number, fields?: ProjectionType<Student>) {
+    return this.db.find(
+      {
+        academicYear
+      },
+      fields
+    )
   }
 }

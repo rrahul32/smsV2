@@ -1,4 +1,10 @@
-import { Classes, Sections } from '@shared/constants'
+import {
+  Classes,
+  GetDueListSortFields,
+  GetStudentsSortFields,
+  Sections,
+  SortOrder
+} from '@shared/constants'
 import { ServerResponse } from './common.type'
 
 export type Student = {
@@ -32,17 +38,6 @@ export type AddStudentResponse = ServerResponse<boolean>
 
 export type UpdateStudentResponse = ServerResponse<boolean>
 
-export type GetStudentsParams = {
-  userId: string
-  searchText?: string
-  limit?: number
-  page?: number
-  filter?: {
-    classes?: Classes[]
-    sections?: Sections[]
-  }
-}
-
 export type GetStudentsDbParams = {
   limit?: number
   skip?: number
@@ -52,6 +47,16 @@ export type GetStudentsDbParams = {
     classes?: Classes[]
     sections?: Sections[]
   }
+  sort?: {
+    field: GetStudentsSortFields
+    sortOrder: SortOrder
+  }
+}
+
+export type GetStudentsParams = Pick<GetStudentsDbParams, 'sort' | 'limit'> & {
+  userId: string
+  page?: number
+  filter?: Omit<GetStudentsDbParams['filter'], 'academicYear'>
 }
 
 export type GetStudentsDbResponse = {
@@ -99,8 +104,8 @@ export type GetDueListDbParams = {
     sections?: Sections[]
   }
   sort?: {
-    sortField: 'class' | 'due'
-    sortOrder: 1 | -1
+    sortField: GetDueListSortFields
+    sortOrder: SortOrder
   }
 }
 

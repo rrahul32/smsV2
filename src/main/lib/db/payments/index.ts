@@ -30,7 +30,7 @@ export class PaymentsDbService {
       const result = await Promise.all(
         payments.map(async (payment) => {
           const record = new this.db(payment)
-          return record.save()
+          return (await record.save()).toJSON()
         })
       )
       return result

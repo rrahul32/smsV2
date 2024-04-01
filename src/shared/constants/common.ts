@@ -15,3 +15,7 @@ export const Months = [
 
 export const phoneNumberRegex = /^[5-9]\d{9}$/
 export const amountRegex = /^\d+(\.\d+)?$/
+export enum SortOrder {
+  asc = 1,
+  desc = -1
+}

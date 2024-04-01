@@ -1,4 +1,4 @@
-import { Classes, PaymentTypes } from '@shared/constants'
+import { Classes, GetDueListSortFields, PaymentTypes, SortOrder } from '@shared/constants'
 import { GetDueListDbParams, GetStudentsDbParams, Student } from '@shared/types'
 import { FilterQuery, PipelineStage } from 'mongoose'
 
@@ -12,6 +12,13 @@ const sortPriority = Object.values(Classes).map((eachClass, index) => {
 })
 
 export const getStudentsQuery = (params: GetStudentsDbParams) => {
+  const sort: Record<string, SortOrder> = params.sort
+    ? {
+        [params.sort.field]: params.sort.sortOrder
+      }
+    : {
+        sortPriority: 1
+      }
   const andQuery: FilterQuery<Student>[] = []
   andQuery.push({
     academicYear: params.filter.academicYear
@@ -55,9 +62,7 @@ export const getStudentsQuery = (params: GetStudentsDbParams) => {
       }
     },
     {
-      $sort: {
-        sortPriority: 1
-      }
+      $sort: sort
     },
     {
       $group: {
@@ -107,6 +112,10 @@ export const getStudentsQuery = (params: GetStudentsDbParams) => {
 
 export const getDueListQuery = (params: GetDueListDbParams) => {
   const currentMonth = new Date().getMonth() + 1
+  const currentYear = new Date().getFullYear()
+  const isFeeCalculated =
+    (params.filter.academicYear === currentYear && currentMonth >= 4) ||
+    (params.filter.academicYear + 1 === currentYear && currentMonth < 4)
   const andQuery: FilterQuery<Student>[] = []
   andQuery.push({
     academicYear: params.filter.academicYear
@@ -125,12 +134,14 @@ export const getDueListQuery = (params: GetDueListDbParams) => {
       }
     })
   }
-  const sort: PipelineStage.Sort['$sort'] = {}
-  if (params.sort && params.sort.sortField === 'due') {
-    sort['totalDue'] = params.sort.sortOrder
-  } else {
-    sort['sortPriority'] = params.sort?.sortOrder ?? 1
-  }
+  const sort: PipelineStage.Sort['$sort'] = params.sort
+    ? {
+        [params.sort.sortField]: params.sort.sortOrder
+      }
+    : {
+        [GetDueListSortFields.studentClass]: 1
+      }
+
   const query: PipelineStage[] = [
     {
       $match: {
@@ -175,8 +186,10 @@ export const getDueListQuery = (params: GetDueListDbParams) => {
         path: '$payments',
         preserveNullAndEmptyArrays: true
       }
-    },
-    {
+    }
+  ]
+  if (isFeeCalculated) {
+    query.push({
       $project: {
         name: 1,
         class: 1,
@@ -194,7 +207,7 @@ export const getDueListQuery = (params: GetDueListDbParams) => {
                         { $lt: ['$joinedFrom', currentMonth] },
                         { $subtract: [currentMonth, '$joinedFrom'] },
                         {
-                          $subtract: [12 + currentMonth, 'joinedFrom']
+                          $subtract: [12 + currentMonth, '$joinedFrom']
                         }
                       ]
                     }
@@ -220,7 +233,25 @@ export const getDueListQuery = (params: GetDueListDbParams) => {
           }
         }
       }
-    },
+    })
+  } else {
+    query.push({
+      $project: {
+        name: 1,
+        class: 1,
+        section: 1,
+        totalFeesDue: { $sum: [0] },
+        totalMiscDue: { $sum: [0] },
+        sortPriority: {
+          $switch: {
+            branches: sortPriority,
+            default: 0
+          }
+        }
+      }
+    })
+  }
+  query.push(
     {
       $addFields: {
         totalFeesDue: {
@@ -270,6 +301,6 @@ export const getDueListQuery = (params: GetDueListDbParams) => {
         }
       }
     }
-  ]
+  )
   return query
 }

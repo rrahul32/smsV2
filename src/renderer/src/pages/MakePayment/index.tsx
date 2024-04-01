@@ -2,7 +2,7 @@ import { addPayments, getStudent, getStudentPayments, searchStudents } from '@/a
 import { PaymentReceiptDialog } from '@/components'
 import { useAuth, useSnackbar } from '@/contexts'
 import { calculateGrandTotal } from '@/utils'
-import { Button, TextField, Typography } from '@mui/material'
+import { Button, CircularProgress, TextField, Typography } from '@mui/material'
 import { PaymentTypes, amountRegex } from '@shared/constants'
 import { Payment, Student } from '@shared/types'
 import { useEffect, useState } from 'react'
@@ -16,6 +16,8 @@ const MakePayment = () => {
   const { userInfo } = useAuth()
 
   const [searchQuery, setSearchQuery] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const [isPaymentLoading, setIsPaymentLoading] = useState(false)
   const [searchResults, setSearchResults] = useState<Student[]>([])
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null)
   const [totalDue, setTotalDue] = useState({
@@ -99,6 +101,7 @@ const MakePayment = () => {
         })
       }
       if (confirm(`Confirm payment of ${amount}?`)) {
+        setIsPaymentLoading(true)
         addPayments({
           payments: payments.map((eachPayment) => ({
             ...eachPayment,
@@ -121,12 +124,14 @@ const MakePayment = () => {
             console.log('🚀 ~ getStudentPayments ~ e:', e)
             error('Something went wrong')
           })
+          .finally(() => setIsPaymentLoading(false))
       }
     }
   }
 
   useEffect(() => {
     if (searchQuery && searchQuery.length && userInfo) {
+      setIsLoading(true)
       searchStudents({ searchText: searchQuery, userId: userInfo.id })
         .then((res) => {
           if (res.result) {
@@ -139,6 +144,7 @@ const MakePayment = () => {
           console.log('🚀 ~ searchStudents ~ e:', e)
           error('Something went wrong')
         })
+        .finally(() => setIsLoading(false))
     } else {
       setSearchResults([])
     }
@@ -232,7 +238,7 @@ const MakePayment = () => {
         onChange={handleSearchChange}
       />
       {/* Display search results */}
-      {searchQuery.length ? (
+      {searchQuery.length && !isLoading ? (
         <div className="flex p-4 border flex-col fixed bg-blue-100 z-10">
           {searchResults.length ? (
             searchResults.map((student, index) => (
@@ -309,7 +315,7 @@ const MakePayment = () => {
                 className=""
                 disabled={payment.error || !payment.value.length}
               >
-                Pay Now
+                {isPaymentLoading ? <CircularProgress /> : 'Pay Now'}
               </Button>
             </form>
           </div>

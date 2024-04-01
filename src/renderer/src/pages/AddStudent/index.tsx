@@ -1,7 +1,9 @@
 import { addStudent, getStudent, updateStudent } from '@/api/students'
 import { useAuth, useSnackbar } from '@/contexts'
 import {
+  Backdrop,
   Button,
+  CircularProgress,
   FormControl,
   FormHelperText,
   InputLabel,
@@ -76,6 +78,7 @@ const AddStudent = () => {
   const [totalFee, setTotalFee] = useState(0)
   const [monthlyFee, setMonthlyFee] = useState(0)
   const [loading, setLoading] = useState(false)
+  const [addStudentloading, setAddStudentLoading] = useState(false)
 
   useEffect(() => {
     if (studentId) {
@@ -260,6 +263,7 @@ const AddStudent = () => {
         uniformTotal: parseFloat(student.uniform.value)
       }
       if (userInfo) {
+        setAddStudentLoading(true)
         if (studentId) {
           updateStudent({ id: studentId, details: studentValues })
             .then((res) => {
@@ -274,6 +278,7 @@ const AddStudent = () => {
               console.log('🚀 ~ updateStudent ~ e:', e)
               error('Something went wrong')
             })
+            .finally(() => setAddStudentLoading(false))
         } else {
           addStudent({ userId: userInfo.id, details: studentValues })
             .then((res) => {
@@ -288,6 +293,7 @@ const AddStudent = () => {
               console.log('🚀 ~ addStudent ~ e:', e)
               error('Something went wrong')
             })
+            .finally(() => setAddStudentLoading(false))
         }
       } else {
         error('User details notset')
@@ -297,6 +303,9 @@ const AddStudent = () => {
 
   return (
     <div className="container mx-auto mt-8 px-4">
+      <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={loading}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
       <Typography variant="h4" component="h2" gutterBottom>
         {studentId ? 'Edit Student' : 'Add Student'}
       </Typography>
@@ -468,7 +477,7 @@ const AddStudent = () => {
             className="mx-auto block"
             disabled={!!errorKey}
           >
-            {studentId ? 'Save Changes' : 'Add Student'}
+            {addStudentloading ? <CircularProgress /> : studentId ? 'Save Changes' : 'Add Student'}
           </Button>
         </div>
       </form>

@@ -1,7 +1,8 @@
 import { getPaymentList } from '@/api'
 import { PaymentReceiptDialog } from '@/components'
 import { useAuth, useSnackbar } from '@/contexts'
-import { Button, CircularProgress } from '@mui/material'
+import { Backdrop, Button, CircularProgress } from '@mui/material'
+import { GetPaymentListSortFields, PaymentTypes, SortOrder } from '@shared/constants'
 import { Payment, Student } from '@shared/types'
 import MUIDataTable from 'mui-datatables'
 import { useEffect, useState } from 'react'
@@ -13,18 +14,52 @@ const PaymentList: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [isOpen, setIsOpen] = useState<boolean>(false)
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
+  const [selectedTypes, setSelectedTypes] = useState<PaymentTypes[]>([])
+  const [totalCount, setTotalCount] = useState<number>(0)
+  const [sort, setSort] = useState({
+    field: GetPaymentListSortFields.createdAt,
+    sortOrder: SortOrder.desc
+  })
+  const [paginationMeta, setPaginationMeta] = useState({
+    limit: 10,
+    page: 0
+  })
 
   const { userInfo } = useAuth()
 
   const { error } = useSnackbar()
 
   useEffect(() => {
+    return () => {
+      setSelectedTypes([])
+      setSort({
+        field: GetPaymentListSortFields.createdAt,
+        sortOrder: SortOrder.desc
+      })
+      setTotalCount(0)
+      setPaginationMeta({
+        limit: 10,
+        page: 0
+      })
+    }
+  }, [])
+
+  useEffect(() => {
     setIsLoading(true)
     if (userInfo) {
-      getPaymentList({})
+      getPaymentList({
+        userId: userInfo.id,
+        filter: {
+          types: selectedTypes
+        },
+        sort,
+        limit: paginationMeta.limit,
+        page: paginationMeta.page
+      })
         .then((res) => {
           if (res.result) {
             setPayments(res.result.list)
+            setTotalCount(res.result.totalCount)
           } else if (res.error) {
             error(res.error.displayMessage)
           }
@@ -35,7 +70,7 @@ const PaymentList: React.FC = () => {
         })
         .finally(() => setIsLoading(false))
     }
-  }, [])
+  }, [selectedTypes, sort, paginationMeta])
 
   const handleDetailsClick = (index: number) => {
     setIsOpen(true)
@@ -53,6 +88,7 @@ const PaymentList: React.FC = () => {
       label: 'S. No.',
       options: {
         filter: false,
+        sort: false,
         customBodyRenderLite: (dataIndex) => dataIndex + 1
       }
     },
@@ -60,23 +96,35 @@ const PaymentList: React.FC = () => {
       name: 'studentName',
       label: 'Name',
       options: {
-        filter: false
+        filter: false,
+        sort: false
       }
     },
     {
       name: 'studentClass',
-      label: 'Class'
+      label: 'Class',
+      options: {
+        filter: false,
+        sort: false
+      }
     },
     {
       name: 'studentSection',
       label: 'Section',
       options: {
-        filter: false
+        filter: false,
+        sort: false
       }
     },
     {
       name: 'type',
-      label: 'Type'
+      label: 'Type',
+      options: {
+        filterOptions: {
+          names: Object.values(PaymentTypes),
+          filterType: 'dropdown'
+        }
+      }
     },
     {
       name: 'amount',
@@ -123,9 +171,44 @@ const PaymentList: React.FC = () => {
   ]
 
   const options = {
-    filter: true,
-    search: true,
-    pagination: true,
+    filterType: 'multiselect',
+    onFilterChange: (_, filterList, type, changedColumnIndex) => {
+      const selectedColumn = columns[changedColumnIndex ?? 0].name
+      const filters = filterList[changedColumnIndex ?? 0]
+      switch (selectedColumn) {
+        case 'type':
+          setSelectedTypes(filters)
+          break
+        default:
+          if (type === 'reset') {
+            setSelectedTypes([])
+          }
+          break
+      }
+    },
+    onColumnSortChange: (changedColumn, direction) => {
+      setSort({
+        field: GetPaymentListSortFields[changedColumn],
+        sortOrder: direction === 'desc' ? SortOrder.desc : SortOrder.asc
+      })
+    },
+    count: totalCount,
+    rowsPerPage: paginationMeta.limit,
+    page: paginationMeta.page,
+    onChangePage: (currentPage: number) => {
+      setPaginationMeta({
+        limit: paginationMeta.limit,
+        page: currentPage
+      })
+    },
+    onChangeRowsPerPage: (numberOfRows: number) => {
+      setPaginationMeta({
+        limit: numberOfRows,
+        page: 0
+      })
+    },
+    serverSide: true,
+    search: false,
     selectableRows: 'none',
     responsive: 'standard',
     download: false,
@@ -150,12 +233,12 @@ const PaymentList: React.FC = () => {
 
   const selectedPayment =
     typeof selectedIndex === 'number' && payments.length ? payments[selectedIndex] : null
-  console.log('🚀 ~ selectedPayment:', selectedPayment)
 
-  return isLoading ? (
-    <CircularProgress color="primary" />
-  ) : (
+  return (
     <div className="container mt-8 mb-8">
+      <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={isLoading}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
       <PaymentReceiptDialog
         open={isOpen}
         onClose={handleDetailsClose}

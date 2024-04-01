@@ -1,4 +1,4 @@
-import { PaymentTypes } from '@shared/constants'
+import { GetPaymentListSortFields, PaymentTypes, SortOrder } from '@shared/constants'
 import { ServerResponse } from './common.type'
 import { Student } from './students.type'
 
@@ -29,13 +29,13 @@ export type GetStudentPaymentsParams = {
 export type GetPaymentsDbParams = {
   filter?: {
     studentIds?: string[]
-    type?: PaymentTypes
+    types?: PaymentTypes[]
   }
   limit?: number
   skip?: number
   sort?: {
-    field: string
-    sortOrder: 1 | -1
+    field: GetPaymentListSortFields
+    sortOrder: SortOrder
   }
   studentDetails?: boolean
 }
@@ -54,6 +54,10 @@ export type GetStudentPaymentsResponse = ServerResponse<GetPaymentsDbResponse>
 
 export type GetPaymentListResponse = ServerResponse<GetPaymentsDbResponse>
 
-export type GetPaymentListParams = Pick<GetPaymentsDbParams, 'limit' | 'sort' | 'filter'> & {
+export type GetPaymentListParams = Pick<GetPaymentsDbParams, 'limit' | 'sort'> & {
+  filter?: {
+    types?: PaymentTypes[]
+  }
   page?: number
+  userId: string
 }
